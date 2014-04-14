@@ -5,30 +5,40 @@ module.exports = function(express) {
 	express.get('/document/list', function(req, res) {
 		var documents = [];
 
-		var files = fs.listFileSync(docDir);
-		for (var i = 0; i < files.length; i++) {
-			if (!files.match(/\.json$/)) {
-				continue;
+		fs.readdir(docDir, function(err, files) {
+			if (err) {
+				res.render('500', {
+					title: 'Directory List Error'
+				});
+
+				return;
 			}
 
-			var fileName = docDir + '/' + files[i];
+			for (var i = 0; i < files.length; i++) {
+				var fileName = docDir + '/' + files[i];
 
-			var stats = fs.statSync(fileName);
+				if (!fileName.match(/\.json$/)) {
+					continue;
+				}
 
-			var document = fs.readFileSync(fileName);
-			var docJson = JSON.parse(document);
+				var stats = fs.statSync(fileName);
 
-			documents.push({
-				title: docJson.title,
-				author: docJson.author,
-				clearance: docJson.clearance,
-				edited: stats.mtime
+				var document = fs.readFileSync(fileName);
+				var docJson = JSON.parse(document);
+
+				documents.push({
+					id: files[i].substring(0, files[i].lastIndexOf('.')),
+					title: docJson.title,
+					author: docJson.author,
+					clearance: docJson.clearance,
+					edited: stats.mtime
+				});
+			}
+
+			res.render('doclist', {
+				title: 'Document List',
+				docs: documents
 			});
-		}
-
-		res.render('doclist', {
-			title: 'Document List',
-			docs: documents
 		});
 	});
 };

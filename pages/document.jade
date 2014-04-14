@@ -3,10 +3,9 @@ extends layout
 block content
 
 	.page-header
-		h1 #{doc.title}
-		p Author: #{doc.author}
+		h1 #{doc.title} <small>Author: #{doc.author}</small>
 
 	.row
-		.col-md-12.well
+		.col-md-12
 			p #{doc.content}
 

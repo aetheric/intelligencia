@@ -6,18 +6,24 @@ block content
 		h1 Document List
 
 	.row
-		.col-md-12.well
+		.col-md-12
 
-			table
+			table.table.table-striped.table-hover
 
 				thead: tr
 					th Title
 					th Author
 					th Clearance
+					th Edited
+					th View
 
-				each doc in #{docs}
+				each doc in docs
 					tr
 						td #{doc.title}
 						td #{doc.author}
-						td #{doc.clearance}
-
+						td
+							each value, key in doc.clearance
+								span #{key}:#{value}
+						td #{doc.edited}
+						td: a.btn.btn-primary(href='/document/#{doc.id}')
+							span.glyphicon.glyphicon-play
