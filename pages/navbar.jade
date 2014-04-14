@@ -19,6 +19,7 @@ mixin navlink(pagetitle, pagename)
 		#navbar-primary.collapse.navbar-collapse
 
 			ul.nav.navbar-nav
+				+navlink('Documents', 'document/list')
 				block extranav
 
 			ul.nav.navbar-nav.navbar-right
