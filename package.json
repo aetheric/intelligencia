@@ -1,19 +1,29 @@
 {
-	"author": "Peter Cummuskey <peterc@aetheric.co.nz> (http://gplus.to/tzrlk)",
 	"name": "intelligencia",
-	"description": "An intelligence asset management tool",
 	"version": "0.0.0",
+	"author": "Peter Cummuskey <peterc@aetheric.co.nz> (http://gplus.to/tzrlk)",
+	"description": "An intelligence asset management tool",
 	"homepage": "https://github.com/aetheric/intelligencia",
+
+	"scripts": {
+		"start": "node app.js"
+	},
+
 	"repository": {
 		"type": "git",
 		"url": "git://github.com/aetheric/intelligencia.git"
 	},
-	"main": "app.js",
+
 	"dependencies": {
-		
+		"express": "3.4.7",
+		"jade": "0.35.0",
+		"newrelic": "1.2.0"
 	},
-	"devDependencies": {},
-	"optionalDependencies": {},
+
+	"devDependencies": {
+		"karma": "0.10.8"
+	},
+
 	"engines": {
 		"node": "*"
 	}
