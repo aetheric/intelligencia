@@ -1,0 +1,20 @@
+{
+	"author": "Peter Cummuskey <peterc@aetheric.co.nz> (http://gplus.to/tzrlk)",
+	"name": "intelligencia",
+	"description": "An intelligence asset management tool",
+	"version": "0.0.0",
+	"homepage": "https://github.com/aetheric/intelligencia",
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/aetheric/intelligencia.git"
+	},
+	"main": "app.js",
+	"dependencies": {
+		
+	},
+	"devDependencies": {},
+	"optionalDependencies": {},
+	"engines": {
+		"node": "*"
+	}
+}
