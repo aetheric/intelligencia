@@ -1,0 +1,5 @@
+INTELLIGENCIA
+=============
+
+This Node + Angular application is designed to make managing intelligence assets a breeze.
+
