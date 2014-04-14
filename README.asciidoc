@@ -3,3 +3,57 @@ INTELLIGENCIA
 
 This Node + Angular application is designed to make managing intelligence assets a breeze.
 
+{toc}
+
+= Specification
+
+== Components
+
+=== Tag
+
+A tag is a codeword that represents a particular security domain. To view a particular document fragment, a user must
+possess access to the given tag, at the required security clearance.
+
+```json
+{
+	"title": "babelfish",
+	"min_clearance": "beta",
+	"implies": [
+		"redrock",
+		"asinine",
+		"forgath"
+	]
+}
+```
+
+=== Clearance
+
+A clearance level defines what level of sensitivity the information in a document fragment is. Each level implies all
+previous levels, so someone with "gamma" clearance also possesses "alpha" and "beta".
+
+```json
+{
+	"title": "beta",
+	"implies": "alpha"
+}
+```
+
+=== Document
+
+Each document has a particular set of tags associated with it that determines its visibility. Content within the
+document contents can also be marked up with a simple syntax to automatically redact any information that a user with
+less clearance than that which is required could protentially read.
+
+A document can only be authored and edited by someone with the highest level of priviledge for the given set of
+security tags. In addition, a user cannot add a tag that they do not have access to.
+
+```json
+{
+	"title": "The Secrets of Stuff"
+	"clearance": {
+		"redrock": "alpha",
+		"forgath: "beta"
+	},
+	"contents": "The Secrets of Stuff\n====================\n\netc..."
+}
+```
