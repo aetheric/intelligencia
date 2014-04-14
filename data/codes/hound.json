@@ -1,0 +1,11 @@
+{
+	"title": "hound",
+	"clearance": "alpha",
+	"implies": [
+		"crosscut",
+		"firebrand",
+		"redpalm",
+		"steelknot",
+		"whitecrow"
+	]
+}
