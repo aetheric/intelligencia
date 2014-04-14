@@ -24,9 +24,9 @@ module.exports = function(express) {
 		if (req.accepts('html')) {
 			res.render('404', {
 				title: 'Missing',
-				path: req.url,
+				path: req.url
 			});
-			
+
 			return;
 		}
 
@@ -35,12 +35,12 @@ module.exports = function(express) {
 				error: 'Not found',
 				path: req.url
 			});
-			
+
 			return;
 		}
 
 		res.type('txt')
-		   .send('Can\'t find ' + req.url);
+			.send('Can\'t find ' + req.url);
 	});
 
 };
