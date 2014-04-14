@@ -1,0 +1,25 @@
+mixin navlink(pagetitle, pagename)
+	- var clazz = ( pagetitle == title ? 'active' : '' )
+	li(class=clazz)
+		a(href='/#{pagename}') #{pagetitle}
+
+.navbar.navbar-default(role='navigation')
+	.container
+
+		.navbar-header
+
+			button.navbar-toggle(type='button', data-toggle='collapse',  data-target='#navbar-primary')
+				span.sr-only Toggle navigation
+				span.icon-bar
+				span.icon-bar
+				span.icon-bar
+
+			a.navbar-brand(href='/') Intelligencia
+
+		#navbar-primary.collapse.navbar-collapse
+
+			ul.nav.navbar-nav
+				block extranav
+
+			ul.nav.navbar-nav.navbar-right
+				+navlink('Log-in', 'login')

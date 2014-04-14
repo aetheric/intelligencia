@@ -1,0 +1,58 @@
+extends layout
+
+mixin input(id, type, help, value)
+	- var val = value ? value : '';
+	input(id='#{id}', name='#{id}', type='#{type}', placeholder='#{help}', value='#{val}')
+
+block content
+
+	.page-title
+		h1 Log-in <small>get into the app</small>
+		p Don't have an account? <a href="/register">Register</a> now.
+
+	if error
+		.alert.alert-danger
+			//- button.close(type='button', data-dismiss='alert', aria-hidden='true') &times;
+			strong There was an error in your submission
+			case error
+				when 'user'
+					p You forgot to enter your username.
+				when 'pass'
+					p You forgot to enter your password.
+				when 'cred'
+					p.
+						The login credentials you provided can't be found.
+						Did you misspell something? Have you
+						<a href="/register?user=#{user}">registered</a>?
+
+	.row
+
+		.col-md-4
+			h3 Classical
+			form.form-horizontal(role='form', method='post')
+
+				.form-group
+					label.control-label.col-sm-3(for='username') Username
+					.col-sm-9
+						+input('username', 'text', 'Dalaraxis', user)
+
+				.form-group
+					label.control-label.col-sm-3(for='password') Password
+					.col-sm-9
+						+input('password', 'password', 'iamthelichking', null)
+
+				.form-group
+					.col-sm-offset-3.col-sm-9
+						button.btn.btn-success(type='submit') Log-in
+
+		//- Will take care of this later
+
+			.col-md-4
+				h3 Social
+				p TODO: Facebook
+				p TODO: Google+
+				p TODO: Twitter
+
+			.col-md-4
+				h3 SQRL
+				p TODO: SQRL code

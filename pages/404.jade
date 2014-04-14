@@ -1,0 +1,16 @@
+extends layout
+
+block extranav
+	li.active: a(href='#{path}') Page Not Found
+
+block content
+
+	.page-title
+		h1 Page Not Found <small>at #{path}</small>
+
+	.row
+		.col-md-12
+			p.
+				The page you requested can't be found on the system. Either it doesn't exist, or a technical glitch is preventing it from being displayed.
+			p.
+				Check the URL you entered in the address bar to make sure it doesn't have any spelling errors. If any of the links presented by this application sent you to this page, please <a href="/about">contact the developer</a>.
