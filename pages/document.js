@@ -5,11 +5,12 @@ module.exports = function(express) {
 		var docFile = __dirname + '/../data/documents/' + req.params.docId + '.json';
 		
 		//TODO: Check that file exists.
-		var document = fs.readFileSync(docFile);;
+		var document = fs.readFileSync(docFile);
+		var docJson = JSON.parse(document);
 
 		res.render('document', {
 			title: 'Document View',
-			doc: document
+			doc: docJson
 		});
 	});
 
