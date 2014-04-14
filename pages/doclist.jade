@@ -1,0 +1,23 @@
+extends layout
+
+block content
+
+	.page-title
+		h1 Document List
+
+	.row
+		.col-md-12.well
+
+			table
+
+				thead: tr
+					th Title
+					th Author
+					th Clearance
+
+				each doc in #{docs}
+					tr
+						td #{doc.title}
+						td #{doc.author}
+						td #{doc.clearance}
+
