@@ -11,7 +11,7 @@ module.exports = function(express) {
 		var file = files[i];
 
 		// if the file is javascript
-		if (file.endsWith('.js')) {
+		if (file.match(/\.js$/)) {
 			// then load it as a routing file.
 			require(pagesDir + '/' + file)(express);
 		}
