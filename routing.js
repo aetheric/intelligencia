@@ -12,8 +12,11 @@ module.exports = function(express) {
 
 		// if the file is javascript
 		if (file.match(/\.js$/)) {
+			var absoluteFile = pagesDir + '/' + file;
+			console.log('Loading routing rules from ' + absoluteFile);
+
 			// then load it as a routing file.
-			require(pagesDir + '/' + file)(express);
+			require(absoluteFile)(express);
 		}
 	}
 
