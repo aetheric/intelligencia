@@ -1,0 +1,12 @@
+extends layout
+
+block content
+
+	.page-header
+		h1 #{doc.title}
+		p Author: #{doc.author}
+
+	.row
+		.col-md-12.well
+			p #{doc.content}
+
