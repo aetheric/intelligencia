@@ -52,7 +52,7 @@ security tags. In addition, a user cannot add a tag that they do not have access
 	"title": "The Secrets of Stuff"
 	"clearance": {
 		"redrock": "alpha",
-		"forgath: "beta"
+		"forgath": "beta"
 	},
 	"contents": "The Secrets of Stuff\n====================\n\netc..."
 }
