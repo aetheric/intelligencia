@@ -32,7 +32,7 @@ module.exports = function(express) {
 		}
 
 		res.render('login', {
-			title: 'Log-in',
+			title: 'Sign-in',
 			error: req.query.error,
 			user: req.query.user
 		});
