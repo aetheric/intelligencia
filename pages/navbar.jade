@@ -19,8 +19,13 @@ mixin navlink(pagetitle, pagename)
 		#navbar-primary.collapse.navbar-collapse
 
 			ul.nav.navbar-nav
-				+navlink('Documents', 'document/list')
+				if user
+					+navlink('Documents', 'document/list')
+
 				block extranav
 
 			ul.nav.navbar-nav.navbar-right
-				+navlink('Log-in', 'login')
+				if user
+					+navlink('Log-out', 'logout')
+				else
+					+navlink('Log-in', 'login')

@@ -12,6 +12,13 @@ module.exports = function() {
 		express.use(Express.cookieParser());
 		express.use(Express.bodyParser());
 		express.use(Express.methodOverride());
+		express.use(Express.session({
+			secret: 'topsecret',
+			cookie: {
+				httpOnly: true,
+				secure: false
+			}
+		}));
 
 		express.use(Express.static(__dirname + '/static'));
 	});
