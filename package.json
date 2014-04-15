@@ -17,7 +17,8 @@
 	"dependencies": {
 		"express": "3.4.7",
 		"jade": "0.35.0",
-		"newrelic": "1.2.0"
+		"newrelic": "1.2.0",
+		"security-middleware": "0.0.3-rc2"
 	},
 
 	"devDependencies": {
@@ -25,6 +26,6 @@
 	},
 
 	"engines": {
-		"node": "*"
+		"node": "0.10.26"
 	}
 }

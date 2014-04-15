@@ -9,57 +9,46 @@ module.exports = function(express) {
 
 	var defaultPwd = credentialsMatcher.encrypt('changeit');
 
+	function scrape(dir, callback) {
+		fs.readdir(dir, function(err, files) {
+			if (err) throw err;
+
+			for (var i = 0; i < files.length; i++) {
+				var file = files[i];
+				if (!file.match(/\.json$/)) continue;
+
+				fs.readFile(dir + '/' + file, function(err, document) {
+					if (err) throw err;
+
+					var data = JSON.parse(document);
+					var id = file.substring(0, file.lastIndexOf('.json'));
+					callback(data, id);
+				});
+			}
+		});
+	}
+
 	// Set up all the roles.
-	var codeDir = __dirname + '/data/codes';
-	fs.readdir(codeDir, function(err, files) {
-		err && throw err;
+	scrape(__dirname + '/data/codes', function(code) {
+		var privileges = [];
+		for (var j = 0; j < code.clearance.length; j++) {
+			var clearance = code.clearance[j];
+			privileges.push(clearance);
 
-		for (var i = 0; i < files.length; i++) {
-			!files[i].match(/\.json$/) && continue;
-
-			var fileName = codeDir + '/' + file;
-			fs.readFile(fileName, function(err, document) {
-				err && throw err;
-
-				var code = JSON.parse(document);
-				var privileges = [];
-
-				var codeId = files[i].substring(0, files[i].lastIndexOf('.json'));
-				for (int j = 0; j < code.clearance.length; j++) {
-					var clearance = code.clearances[j];
-					privileges.push(clearance);
-
-					inMemoryStore.storeRole({
-						name: clearance,
-						privileges: privileges
-					});
-				}
+			inMemoryStore.storeRole({
+				name: clearance,
+				privileges: privileges
 			});
 		}
 	});
 
 	// Set up all the users
-	var userDir = __dirname + '/data/users';
-	fs.readdir(userDir, function(err, files) {
-		err && throw err;
-
-		for (var i = 0; i < files.length; files++) {
-			!files[i].match(/\.json$/) && continue;
-
-			var fileName = userDir + '/' + files[i];
-			fs.readFile(fileName, function(err, document) {
-				err && throw err;
-
-				var user = JSON.parse(document);
-
-				var userId = files[i].substring(0, files[i].lastIndexOf('.json');
-				inMemoryStore.storeAccount({
-					username: userId,
-					password: user.password || defaultPwd,
-					roles: user.clearance
-				});
-			});
-		}
+	scrape(__dirname + '/data/users', function(user, userId) {
+		inMemoryStore.storeAccount({
+			username: userId,
+			password: user.password || defaultPwd,
+			roles: user.clearance
+		});
 	});
 
 	// Set up all the access restrictions
@@ -70,34 +59,20 @@ module.exports = function(express) {
 		}
 	];
 
-	var docDir = __dirname + '/data/documents';
-	fs.readdir(docDir, function(err, files) {
-		err && throw err;
+	scrape(__dirname + '/data/documents', function(doc, docId) {
+		var permissions = [];
 
-		for (var i = 0; i < files.length; i++) {
-			!files[i].match(/\.json$/) && continue;
-			
-			var fileName = docDir + '/' + files[i];
-			fs.readFile(fileName, function(err, document) {
-				err && throw err;
-
-				var doc = JSON.parse(document);
-				var permissions = [];
-
-				for (var j = 0; j < doc.clearance.length; j++) {
-					var clearance = doc.clearance[j];
-					var permission = '[permission=' + clearance ']';
-					permissions.push('permission');
-				}
-
-				var docId = files[i].substring(0, files[i].lastIndexOf('.json'));
-				access.push({
-					url: '/document/' + docId,
-					authentication: 'FORM',
-					rules: '[role=admin] || ' + permissions.join(' && ')
-				});
-			});
+		for (var j = 0; j < doc.clearance.length; j++) {
+			var clearance = doc.clearance[j];
+			var permission = '[permission=' + clearance + ']';
+			permissions.push('permission');
 		}
+
+		access.push({
+			url: '/document/' + docId,
+			authentication: 'FORM',
+			rules: '[role=admin] || ' + permissions.join(' && ')
+		});
 	});
 
 	express.use(security({
