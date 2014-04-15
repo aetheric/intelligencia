@@ -6,7 +6,8 @@
 	"homepage": "https://github.com/aetheric/intelligencia",
 
 	"scripts": {
-		"start": "node app.js"
+		"start": "node app.js",
+		"test": "karma start"
 	},
 
 	"repository": {
@@ -23,10 +24,13 @@
 	},
 
 	"devDependencies": {
-		"karma": "0.10.8"
+		"karma": "0.12.9",
+		"karma-jasmine": "0.1.5",
+		"karma-chrome-launcher": "0.1.3"
 	},
 
 	"engines": {
 		"node": "0.10.26"
 	}
+
 }
