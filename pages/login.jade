@@ -6,13 +6,13 @@ mixin input(id, type, help, value)
 
 block content
 
-	.page-title
-		h1 Log-in <small>get into the app</small>
-		p Don't have an account? <a href="/register">Register</a> now.
+	.page-title.row
+		.col-md-4.col-md-offset-4.col-sm-6.col-sm-offset-3
+			h1 Sign-in
 
 	if error
 		.alert.alert-danger
-			//- button.close(type='button', data-dismiss='alert', aria-hidden='true') &times;
+			button.close(type='button', data-dismiss='alert', aria-hidden='true') &times;
 			strong There was an error in your submission
 			case error
 				when 'user'
@@ -27,8 +27,7 @@ block content
 
 	.row
 
-		.col-md-4
-			h3 Classical
+		.col-md-4.col-md-offset-4.col-sm-6.col-sm-offset-3.well
 			form.form-horizontal(role='form', method='post')
 
 				.form-group
@@ -43,16 +42,4 @@ block content
 
 				.form-group
 					.col-sm-offset-3.col-sm-9
-						button.btn.btn-success(type='submit') Log-in
-
-		//- Will take care of this later
-
-			.col-md-4
-				h3 Social
-				p TODO: Facebook
-				p TODO: Google+
-				p TODO: Twitter
-
-			.col-md-4
-				h3 SQRL
-				p TODO: SQRL code
+						button.btn.btn-success(type='submit') Sign-in
