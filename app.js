@@ -10,7 +10,8 @@ var env = process.env.NODE_ENV || 'development';
 // init and set up express.
 var express = require('./express')();
 
-// Configure routing
+// Configure security and routing.
+require('./security')(express);
 require('./routing')(express);
 
 // Start the server
