@@ -1,10 +1,10 @@
 {
 	"title": "Polaris",
-	"password": "password",
+	"password": null,
 	"email": null,
 	"diatribe": null,
 	"city": "Auckland",
-	"clearance": {
-		"hound": "gamma"
-	}
+	"clearance": [
+		"hound:gamma"
+	]
 }
