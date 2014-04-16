@@ -15,6 +15,7 @@
 	},
 
 	"dependencies": {
+		"underscore": "1.6.0",
 		"express": "3.4.7",
 		"jade": "0.35.0",
 		"newrelic": "1.2.0",

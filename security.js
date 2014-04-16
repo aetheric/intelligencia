@@ -1,5 +1,6 @@
 module.exports = function(express) {
 	var fs = require('fs');
+	var _ = require('underscore');
 
 	var security = require('security-middleware');
 	var utils = require('security-middleware/lib/security.js');
@@ -13,9 +14,8 @@ module.exports = function(express) {
 		fs.readdir(dir, function(err, files) {
 			if (err) throw err;
 
-			for (var i = 0; i < files.length; i++) {
-				var file = files[i];
-				if (!file.match(/\.json$/)) continue;
+			_.each(files, function(file) {
+				if (!file.match(/\.json$/)) return;
 
 				fs.readFile(dir + '/' + file, function(err, document) {
 					if (err) throw err;
@@ -24,26 +24,27 @@ module.exports = function(express) {
 					var id = file.substring(0, file.lastIndexOf('.json'));
 					callback(data, id);
 				});
-			}
+			});
 		});
 	}
 
 	// Set up all the roles.
 	scrape(__dirname + '/data/codes', function(code) {
 		var privileges = [];
-		for (var j = 0; j < code.clearance.length; j++) {
-			var clearance = code.clearance[j];
+
+		_.each(code.clearance, function(clearance) {
 			privileges.push(clearance);
 
 			inMemoryStore.storeRole({
 				name: clearance,
 				privileges: privileges
 			});
-		}
+		});
 	});
 
 	// Set up all the users
 	scrape(__dirname + '/data/users', function(user, userId) {
+		console.log('Loading user "' + userId + '"');
 		inMemoryStore.storeAccount({
 			username: userId,
 			password: user.password || defaultPwd,
@@ -62,11 +63,10 @@ module.exports = function(express) {
 	scrape(__dirname + '/data/documents', function(doc, docId) {
 		var permissions = [];
 
-		for (var j = 0; j < doc.clearance.length; j++) {
-			var clearance = doc.clearance[j];
+		_.each(doc.clearance, function(clearance) {
 			var permission = '[permission=' + clearance + ']';
 			permissions.push('permission');
-		}
+		});
 
 		access.push({
 			url: '/document/' + docId,
