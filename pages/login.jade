@@ -1,9 +1,5 @@
 extends layout
 
-mixin input(id, type, help, value)
-	- var val = value ? value : '';
-	input(id='#{id}', name='#{id}', type='#{type}', placeholder='#{help}', value='#{val}')
-
 block content
 
 	.page-title.row
@@ -15,11 +11,11 @@ block content
 			button.close(type='button', data-dismiss='alert', aria-hidden='true') &times;
 			strong There was an error in your submission
 			case error
-				when 'user'
+				when 'error.user'
 					p You forgot to enter your username.
-				when 'pass'
+				when 'error.pass'
 					p You forgot to enter your password.
-				when 'cred'
+				when 'error.cred'
 					p.
 						The login credentials you provided can't be found.
 						Did you misspell something? Have you
@@ -29,16 +25,31 @@ block content
 
 		.col-md-4.col-md-offset-4.col-sm-6.col-sm-offset-3.well
 			form.form-horizontal(role='form', method='post')
+				input(type='hidden', name='redirect', value='/document/list')
 
 				.form-group
 					label.control-label.col-sm-3(for='username') Username
 					.col-sm-9
-						+input('username', 'text', 'Dalaraxis', user)
+						input(
+							id='username',
+							name='username',
+							type='text',
+							placeholder='Dalaraxis',
+							value=username,
+							autofocus=(!username)
+						)
 
 				.form-group
 					label.control-label.col-sm-3(for='password') Password
 					.col-sm-9
-						+input('password', 'password', 'iamthelichking', null)
+						input(
+							id='password',
+							name='password',
+							type='password',
+							placeholder='iamthelichking',
+							value='',
+							autofocus=(username)
+						)
 
 				.form-group
 					.col-sm-offset-3.col-sm-9
