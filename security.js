@@ -45,6 +45,7 @@ module.exports = function(express) {
 	// Set up all the users
 	scrape(__dirname + '/data/users', function(user, userId) {
 		console.log('Loading user "' + userId + '"');
+		user.clearance.push('user');
 		inMemoryStore.storeAccount({
 			username: userId,
 			password: user.password || defaultPwd,
@@ -56,7 +57,13 @@ module.exports = function(express) {
 	var access = [
 		{
 			url: '/admin',
+			authentication : 'FORM',
 			rules: '[role=admin]'
+		},
+		{
+			url: '/document/list',
+			authentication : 'FORM',
+			rules: '[role=admin] || [role=user]'
 		}
 	];
 
@@ -64,6 +71,7 @@ module.exports = function(express) {
 		var permissions = [];
 
 		_.each(doc.clearance, function(clearance) {
+			console.log('Adding permission "' + clearance + '" to "/document/' + docId + '"');
 			var permission = '[permission=' + clearance + ']';
 			permissions.push('permission');
 		});
@@ -88,5 +96,11 @@ module.exports = function(express) {
 		passwordParam: 'password',
 		acl: access
 	}));
+
+	// Add the current user to the rendering context.
+	express.use(function(req, res, next) {
+		res.locals.auth = req.subject;
+		next();
+	});
 
 };

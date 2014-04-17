@@ -5,12 +5,6 @@ module.exports = function(express) {
 		res.redirect(301, '/login');
 	});
 
-	// Add the current user to the rendering context.
-	express.use(function(req, res, next) {
-		res.locals.user = req.session.user;
-		next();
-	});
-
 	var pagesDir = __dirname + '/pages';
 	var files = require('fs').readdirSync(pagesDir);
 	for (var i = 0; i < files.length; i++) {

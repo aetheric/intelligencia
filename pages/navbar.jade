@@ -19,13 +19,13 @@ mixin navlink(pagetitle, pagename)
 		#navbar-primary.collapse.navbar-collapse
 
 			ul.nav.navbar-nav
-				if user
+				if auth.isAuthenticated()
 					+navlink('Documents', 'document/list')
 
 				block extranav
 
 			ul.nav.navbar-nav.navbar-right
-				if user
+				if auth.isAuthenticated()
 					+navlink('Log-out', 'logout')
 				else
 					+navlink('Log-in', 'login')
