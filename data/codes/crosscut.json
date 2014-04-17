@@ -1,9 +1,6 @@
 {
 	"title": "crosscut",
-	"clearance": [
-		"crosscut:alpha",
-		"crosscut:beta",
-		"crosscut:gamma",
-		"crosscut:delta"
+	"clearance": "alpha",
+	"implies": [
 	]
 }

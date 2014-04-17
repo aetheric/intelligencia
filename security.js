@@ -9,6 +9,19 @@ module.exports = function(express) {
 	var credentialsMatcher = utils.sha256CredentialsMatcher;
 
 	var defaultPwd = credentialsMatcher.encrypt('changeit');
+	var levels = _.extend([
+		'alpha',
+		'beta',
+		'gamma',
+		'delta',
+		'epsilon'
+	], {
+		alpha: 0,
+		beta: 1,
+		gamma: 2,
+		delta: 3,
+		epsilon: 4
+	});
 
 	function scrape(dir, callback) {
 		fs.readdir(dir, function(err, files) {
@@ -29,17 +42,22 @@ module.exports = function(express) {
 	}
 
 	// Set up all the roles.
-	scrape(__dirname + '/data/codes', function(code) {
-		var privileges = [];
+	scrape(__dirname + '/data/codes', function(code, codeId) {
+		_.inject(levels, function(privileges, level) {
+			if (levels[code.clearance] > levels[level])
+				return privileges;
 
-		_.each(code.clearance, function(clearance) {
-			privileges.push(clearance);
+			var roleName = codeId + ':' + level;
+			privileges.push('[privilege=' + roleName + ']');
+			console.log('Adding role "' + roleName + '" with privileges "' + privileges.join(', ') + '"');
 
 			inMemoryStore.storeRole({
-				name: clearance,
+				name: codeId + ':' + level,
 				privileges: privileges
 			});
-		});
+
+			return privileges;
+		}, []);
 	});
 
 	// Set up all the users
