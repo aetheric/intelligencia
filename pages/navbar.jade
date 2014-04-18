@@ -26,6 +26,6 @@ mixin navlink(pagetitle, pagename)
 
 			ul.nav.navbar-nav.navbar-right
 				if auth.isAuthenticated()
-					+navlink('Log-out', 'logout')
+					+navlink('Sign-out', 'logout')
 				else
-					+navlink('Log-in', 'login')
+					+navlink('Sign-in', 'login')
