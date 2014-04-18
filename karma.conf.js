@@ -18,8 +18,7 @@ module.exports = function(config) {
 		files: [
 			'test-main.js',
 			{ pattern: '*.js', included: false },
-			{ pattern: 'pages/*.js', included: false },
-			{ pattern: 'test/**/*.js', included: false }
+			{ pattern: 'src/**/*.js', included: false }
 		],
 
 		// list of files to exclude
