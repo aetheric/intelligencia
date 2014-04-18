@@ -35,7 +35,7 @@ module.exports = function(express, fnDir) {
 				});
 			}
 
-			res.render('doclist', {
+			res.render('doc_list', {
 				title: 'Document List',
 				docs: documents
 			});

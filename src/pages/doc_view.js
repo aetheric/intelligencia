@@ -25,7 +25,7 @@ module.exports = function(express, fnDir) {
 
 				var docJson = JSON.parse(document);
 
-				res.render('document', {
+				res.render('doc_view', {
 					title: 'Document View',
 					doc: docJson
 				});
