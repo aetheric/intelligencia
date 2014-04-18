@@ -1,5 +1,10 @@
 module.exports = function(express) {
 
+	express.use(function(req, res, next) {
+		res.locals.req = req;
+		next();
+	});
+
 	// Redirect root requests to the home page.
 	express.get('/', function(req, res) {
 		res.redirect(301, '/login');

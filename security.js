@@ -82,6 +82,21 @@ module.exports = function(express) {
 			url: '/document/list',
 			authentication : 'FORM',
 			rules: '[role=admin] || [role=user]'
+		},
+		{
+			url: '/user/list',
+			authentication: 'FORM',
+			rules: '[role=admin] || [role=user]'
+		},
+		{
+			url: '/user/dash',
+			authentication: 'FORM',
+			rules: '[role=admin] || [role=user]'
+		},
+		{
+			url: '/user/list/*',
+			authentication: 'FORM',
+			rules: '[role=admin]'
 		}
 	];
 
@@ -117,7 +132,20 @@ module.exports = function(express) {
 
 	// Add the current user to the rendering context.
 	express.use(function(req, res, next) {
-		res.locals.auth = req.subject;
+		var subject = req.subject;
+		var auth = res.locals.auth = {
+			isValid: subject.isAuthenticated(),
+			user: subject.getPrincipal()
+		};
+
+		if (auth.isValid) {
+
+			subject.hasRole('admin', function(isAdmin) {
+				auth.isAdmin = isAdmin;
+			});
+
+		}
+
 		next();
 	});
 

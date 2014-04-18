@@ -1,7 +1,7 @@
-mixin navlink(pagetitle, pagename)
-	- var clazz = ( pagetitle == title ? 'active' : '' )
+mixin navlink(pagetitle, path)
+	- var clazz = ( req.url.match('^' + path) ? 'active' : '' )
 	li(class=clazz)
-		a(href='/#{pagename}') #{pagetitle}
+		a(href=path) #{pagetitle}
 
 .navbar.navbar-default(role='navigation')
 	.container
@@ -19,13 +19,18 @@ mixin navlink(pagetitle, pagename)
 		#navbar-primary.collapse.navbar-collapse
 
 			ul.nav.navbar-nav
-				if auth.isAuthenticated()
-					+navlink('Documents', 'document/list')
+				if auth.isValid
+					+navlink('Documents', '/document/list')
+					if auth.isAdmin
+						+navlink('User List', '/user/list')
+					+navlink('User Dashboard', '/user/dash')
 
 				block extranav
 
 			ul.nav.navbar-nav.navbar-right
-				if auth.isAuthenticated()
-					+navlink('Sign-out', 'logout')
+				if auth.isValid
+					+navlink('Sign-out', '/logout')
+				else if req.url.match('^/login')
+					+navlink('Register', '/register')
 				else
-					+navlink('Sign-in', 'login')
+					+navlink('Sign-in', '/login')
