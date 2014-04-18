@@ -1,4 +1,4 @@
-module.exports = function(express, fnDir) {
+module.exports = function(express, data) {
 	var fs = require('fs');
 	var _ = require('underscore');
 
@@ -24,7 +24,7 @@ module.exports = function(express, fnDir) {
 	});
 
 	function scrape(path, callback) {
-		var targetDir = fnDir('/../etc' + path);
+		var targetDir = data.fnDir('/../etc' + path);
 		console.log('Scraping "' + targetDir + '" for data.');
 		fs.readdir(targetDir, function(err, files) {
 			if (err) throw err;

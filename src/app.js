@@ -7,16 +7,24 @@ require('newrelic');
 var port = process.env.PORT || 8015;
 var env = process.env.NODE_ENV || 'development';
 
-function fnDir(path) {
-	return __dirname + path;
-}
+var data = {
+
+	pages: {},
+
+	fnDir: function(path) {
+		return __dirname + path;
+	}
+
+};
+
+require('./pagescan')(data);
 
 // init and set up express.
-var express = require('./express')(fnDir);
+var express = require('./express')(data);
 
 // Configure security and routing.
-require('./security')(express, fnDir);
-require('./routing')(express, fnDir);
+require('./security')(express, data);
+require('./routing')(express, data);
 
 // Start the server
 console.log("Starting server in ", env);

@@ -1,13 +1,13 @@
-module.exports = function(express, fnDir) {
+module.exports = function(express, data, page) {
 	var fs = require('fs');
-	var docDir = fnDir('/../etc/documents');
+	var docDir = data.fnDir('/../etc/documents');
 
-	express.get('/app/document/view/:docId', function(req, res) {
+	express.get(page.path + 'view/:docId', function(req, res) {
 		var docFile = docDir + '/' + req.params.docId + '.json';
 
 		fs.exists(docFile, function(exists) {
 			if (!exists) {
-				res.render('404', {
+				res.render(data.pages.error_missing.template, {
 					title: 'Document Not Found'
 				});
 
@@ -25,7 +25,7 @@ module.exports = function(express, fnDir) {
 
 				var docJson = JSON.parse(document);
 
-				res.render('doc_view', {
+				res.render(page.template, {
 					title: 'Document View',
 					doc: docJson
 				});

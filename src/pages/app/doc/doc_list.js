@@ -1,13 +1,13 @@
-module.exports = function(express, fnDir) {
+module.exports = function(express, data, page) {
 	var fs = require('fs');
-	var docDir = fnDir('/../etc/documents');
+	var docDir = data.fnDir('/../etc/documents');
 
-	express.get('/app/document/list', function(req, res) {
+	express.get(page.path + 'list', function(req, res) {
 		var documents = [];
 
 		fs.readdir(docDir, function(err, files) {
 			if (err) {
-				res.render('500', {
+				res.render(data.pages.error_server.template, {
 					title: 'Directory List Error'
 				});
 
@@ -35,7 +35,7 @@ module.exports = function(express, fnDir) {
 				});
 			}
 
-			res.render('doc_list', {
+			res.render(page.template, {
 				title: 'Document List',
 				docs: documents
 			});

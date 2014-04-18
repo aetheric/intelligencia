@@ -1,5 +1,4 @@
-module.exports = function(express, fnDir) {
-	var fs = require('fs');
+module.exports = function(express, data) {
 	var _ = require('underscore');
 
 	express.use(function(req, res, next) {
@@ -12,30 +11,11 @@ module.exports = function(express, fnDir) {
 		res.redirect(301, '/auth/login');
 	});
 
-	function process(dirname, path) {
-		var files = require('fs').readdirSync(pagesDir);
-		_.each(files, function(file) {
-			var fileName = dirname + '/' + file;
-			var stats = fs.statSync(fileName);
-
-			if (stats.isDirectory()) {
-				process(fileName, path + dirname + '/');
-				return;
-			}
-
-			if (!stats.isFile() || !file.match(/\.js$/)) {
-				return;
-			}
-
-			console.log('Loading routing rules from "' + fileName + '".');
-
-			// then load it as a routing file.
-			require(fileName)(express, fnDir, path);
-		});
-	}
-
-	var pagesDir = fnDir('/pages');
-	process(pagesDir, '/');
+	_.each(data.pages, function(page) {
+		if (page.script) {
+			require(page.script)(express, data, page);
+		}
+	});
 
 	// Handle requests that don't get routed.
 	express.use(function(req, res) {
