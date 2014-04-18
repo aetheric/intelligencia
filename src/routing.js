@@ -1,4 +1,4 @@
-module.exports = function(express) {
+module.exports = function(express, fnDir) {
 
 	express.use(function(req, res, next) {
 		res.locals.req = req;
@@ -10,7 +10,7 @@ module.exports = function(express) {
 		res.redirect(301, '/login');
 	});
 
-	var pagesDir = __dirname + '/pages';
+	var pagesDir = fnDir('/pages');
 	var files = require('fs').readdirSync(pagesDir);
 	for (var i = 0; i < files.length; i++) {
 		var file = files[i];
@@ -21,7 +21,7 @@ module.exports = function(express) {
 			console.log('Loading routing rules from ' + absoluteFile);
 
 			// then load it as a routing file.
-			require(absoluteFile)(express);
+			require(absoluteFile)(express, fnDir);
 		}
 	}
 

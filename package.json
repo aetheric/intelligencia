@@ -6,7 +6,7 @@
 	"homepage": "https://github.com/aetheric/intelligencia",
 
 	"scripts": {
-		"start": "node app.js",
+		"start": "node src/app.js",
 		"test": "karma start"
 	},
 

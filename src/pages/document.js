@@ -1,6 +1,6 @@
-module.exports = function(express) {
+module.exports = function(express, fnDir) {
 	var fs = require('fs');
-	var docDir = __dirname + '/../data/documents';
+	var docDir = fnDir('/etc/documents');
 
 	express.get('/app/document/view/:docId', function(req, res) {
 		var docFile = docDir + '/' + req.params.docId + '.json';

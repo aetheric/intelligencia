@@ -1,11 +1,11 @@
-module.exports = function() {
+module.exports = function(fnDir) {
 
 	var Express = require('express');
 	var express = Express();
-	
+
 	// configure the express server
 	express.configure(function() {
-		express.set('views', __dirname + '/pages');
+		express.set('views', fnDir('/pages'));
 		express.set('view engine', 'jade');
 		express.set('view options', { layout: false });
 
@@ -20,7 +20,7 @@ module.exports = function() {
 			}
 		}));
 
-		express.use(Express.static(__dirname + '/static'));
+		express.use(Express.static(fnDir('/static')));
 	});
 
 	return express;

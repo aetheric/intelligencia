@@ -1,4 +1,4 @@
-module.exports = function(express) {
+module.exports = function(express, fnDir) {
 	var fs = require('fs');
 	var _ = require('underscore');
 
@@ -23,14 +23,16 @@ module.exports = function(express) {
 		epsilon: 4
 	});
 
-	function scrape(dir, callback) {
-		fs.readdir(dir, function(err, files) {
+	function scrape(path, callback) {
+		var targetDir = fnDir('/../etc' + path);
+		console.log('Scraping "' + targetDir + '" for data.');
+		fs.readdir(targetDir, function(err, files) {
 			if (err) throw err;
 
 			_.each(files, function(file) {
 				if (!file.match(/\.json$/)) return;
 
-				fs.readFile(dir + '/' + file, function(err, document) {
+				fs.readFile(targetDir + '/' + file, function(err, document) {
 					if (err) throw err;
 
 					var data = JSON.parse(document);
@@ -42,7 +44,7 @@ module.exports = function(express) {
 	}
 
 	// Set up all the roles.
-	scrape(__dirname + '/data/codes', function(code, codeId) {
+	scrape('/codes', function(code, codeId) {
 		_.inject(levels, function(privileges, level) {
 			if (levels[code.clearance] > levels[level])
 				return privileges;
@@ -61,7 +63,7 @@ module.exports = function(express) {
 	});
 
 	// Set up all the users
-	scrape(__dirname + '/data/users', function(user, userId) {
+	scrape('/users', function(user, userId) {
 		console.log('Loading user "' + userId + '"');
 		user.clearance.push('user');
 		inMemoryStore.storeAccount({
@@ -85,7 +87,7 @@ module.exports = function(express) {
 		}
 	];
 
-	scrape(__dirname + '/data/documents', function(doc, docId) {
+	scrape('/documents', function(doc, docId) {
 		var permissions = [];
 
 		_.each(doc.clearance, function(clearance) {
@@ -95,7 +97,7 @@ module.exports = function(express) {
 		});
 
 		access.push({
-			url: '/document/' + docId,
+			url: '/app/document/' + docId,
 			authentication: 'FORM',
 			rules: '[role=admin] || ' + permissions.join(' && ')
 		});
