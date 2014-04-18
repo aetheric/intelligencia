@@ -1,4 +1,6 @@
 module.exports = function(express, fnDir) {
+	var fs = require('fs');
+	var _ = require('underscore');
 
 	express.use(function(req, res, next) {
 		res.locals.req = req;
@@ -10,20 +12,30 @@ module.exports = function(express, fnDir) {
 		res.redirect(301, '/auth/login');
 	});
 
-	var pagesDir = fnDir('/pages');
-	var files = require('fs').readdirSync(pagesDir);
-	for (var i = 0; i < files.length; i++) {
-		var file = files[i];
+	function process(dirname, path) {
+		var files = require('fs').readdirSync(pagesDir);
+		_.each(files, function(file) {
+			var fileName = dirname + '/' + file;
+			var stats = fs.statSync(fileName);
 
-		// if the file is javascript
-		if (file.match(/\.js$/)) {
-			var absoluteFile = pagesDir + '/' + file;
-			console.log('Loading routing rules from ' + absoluteFile);
+			if (stats.isDirectory()) {
+				process(fileName, path + dirname + '/');
+				return;
+			}
+
+			if (!stats.isFile() || !file.match(/\.js$/)) {
+				return;
+			}
+
+			console.log('Loading routing rules from "' + fileName + '".');
 
 			// then load it as a routing file.
-			require(absoluteFile)(express, fnDir);
-		}
+			require(fileName)(express, fnDir, path);
+		});
 	}
+
+	var pagesDir = fnDir('/pages');
+	process(pagesDir, '/');
 
 	// Handle requests that don't get routed.
 	express.use(function(req, res) {
