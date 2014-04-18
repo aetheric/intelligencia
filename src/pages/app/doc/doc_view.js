@@ -2,7 +2,7 @@ module.exports = function(express, data, page) {
 	var fs = require('fs');
 	var docDir = data.fnDir('/../etc/documents');
 
-	express.get(page.path + 'view/:docId', function(req, res) {
+	express.get(page.path + '/:docId', function(req, res) {
 		var docFile = docDir + '/' + req.params.docId + '.json';
 
 		fs.exists(docFile, function(exists) {
@@ -16,7 +16,7 @@ module.exports = function(express, data, page) {
 
 			fs.readFile(docFile, function(err, document) {
 				if (err) {
-					res.render('500', {
+					res.render(data.pages.error_server.template, {
 						title: 'Error Reading Document'
 					});
 
@@ -27,7 +27,8 @@ module.exports = function(express, data, page) {
 
 				res.render(page.template, {
 					title: 'Document View',
-					doc: docJson
+					doc: docJson,
+					content: data.fnRedact(docJson)
 				});
 			});
 		});

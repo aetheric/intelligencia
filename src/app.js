@@ -17,7 +17,9 @@ var data = {
 
 };
 
-require('./pagescan')(data);
+require('./utils/utils')(data);
+require('./utils/pagescan')(data);
+require('./utils/redacter')(data);
 
 // init and set up express.
 var express = require('./express')(data);

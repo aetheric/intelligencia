@@ -1,8 +1,8 @@
 module.exports = function(express, data, page) {
 
-	express.get(page.path + 'register', function(req, res) {
+	express.get(page.path, function(req, res) {
 		if (req.subject.isAuthenticated()) {
-			res.redirect('/app/user/dash');
+			res.redirect(data.pages.app_user_dash.path);
 			return;
 		}
 

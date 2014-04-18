@@ -2,10 +2,6 @@ module.exports = function(data) {
 	var fs = require('fs');
 	var _ = require('underscore');
 
-	function stripSuffix(string, suffix) {
-		return string.substring(0, string.lastIndexOf(suffix));
-	}
-
 	function process(dirname, path) {
 		var files = fs.readdirSync(dirname);
 
@@ -22,17 +18,20 @@ module.exports = function(data) {
 				return;
 			}
 
-			var pageName = stripSuffix(file, '.j');
-			if (!data.pages[pageName]) {
-				data.pages[pageName] = {
-					path: path
+			var pagePath = path + file.stripSuffix('.j', '_');
+			var pageName = pagePath.replace(/\\|\//g, '_').remove(/^_/g);
+			var page = data.pages[pageName];
+
+			if (!page) {
+				page = data.pages[pageName] = {
+					path: pagePath
 				};
 			}
 
 			if (file.match(/\.js$/)) {
-				data.pages[pageName].script = fileName;
+				page.script = fileName;
 			} else {
-				data.pages[pageName].template = path.substring(1) + pageName;
+				page.template = path.substring(1) + file.stripSuffix('.jade');
 			}
 
 		});

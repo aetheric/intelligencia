@@ -1,6 +1,6 @@
 module.exports = function(express, data, page) {
 
-	express.get(page.path + 'list', function(req, res) {
+	express.get(page.path, function(req, res) {
 		res.render(page.template, {
 			title: 'User List'
 		});

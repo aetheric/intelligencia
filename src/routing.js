@@ -8,7 +8,7 @@ module.exports = function(express, data) {
 
 	// Redirect root requests to the home page.
 	express.get('/', function(req, res) {
-		res.redirect(301, '/auth/login');
+		res.redirect(301, data.pages.auth_login.path);
 	});
 
 	_.each(data.pages, function(page) {
@@ -22,7 +22,7 @@ module.exports = function(express, data) {
 		res.status(404);
 
 		if (req.accepts('html')) {
-			res.render('404', {
+			res.render(data.pages.error_missing.template, {
 				title: 'Missing',
 				path: req.url
 			});
