@@ -91,13 +91,13 @@ module.exports = function(express, fnDir) {
 		var permissions = [];
 
 		_.each(doc.clearance, function(clearance) {
-			console.log('Adding permission "' + clearance + '" to "/app/document/' + docId + '"');
+			console.log('Adding permission "' + clearance + '" to "/app/document/view/' + docId + '"');
 			var permission = '[permission=' + clearance + ']';
 			permissions.push('permission');
 		});
 
 		access.push({
-			url: '/app/document/' + docId,
+			url: '/app/document/view/' + docId,
 			authentication: 'FORM',
 			rules: '[role=admin] || ' + permissions.join(' && ')
 		});
