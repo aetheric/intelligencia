@@ -1,5 +1,5 @@
 module.exports = function(express) {
-	var defaultRedirect = '/document/list';
+	var defaultRedirect = '/app/document/list';
 
 	express.get('/login', function(req, res) {
 

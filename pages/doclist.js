@@ -2,7 +2,7 @@ module.exports = function(express) {
 	var fs = require('fs');
 	var docDir = __dirname + '/../data/documents';
 
-	express.get('/document/list', function(req, res) {
+	express.get('/app/document/list', function(req, res) {
 		var documents = [];
 
 		fs.readdir(docDir, function(err, files) {

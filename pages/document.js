@@ -2,7 +2,7 @@ module.exports = function(express) {
 	var fs = require('fs');
 	var docDir = __dirname + '/../data/documents';
 
-	express.get('/document/:docId', function(req, res) {
+	express.get('/app/document/view/:docId', function(req, res) {
 		var docFile = docDir + '/' + req.params.docId + '.json';
 
 		fs.exists(docFile, function(exists) {

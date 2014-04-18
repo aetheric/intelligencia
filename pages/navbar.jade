@@ -20,10 +20,10 @@ mixin navlink(pagetitle, path)
 
 			ul.nav.navbar-nav
 				if auth.isValid
-					+navlink('Documents', '/document/list')
+					+navlink('Documents', '/app/document/list')
 					if auth.isAdmin
-						+navlink('User List', '/user/list')
-					+navlink('User Dashboard', '/user/dash')
+						+navlink('User List', '/app/user/list')
+					+navlink('User Dashboard', '/app/user/dash')
 
 				block extranav
 

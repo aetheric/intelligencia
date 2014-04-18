@@ -2,7 +2,7 @@ extends layout
 
 block content
 
-	.page-title
+	.page-header
 		h1 Document List
 
 	.row
@@ -25,5 +25,5 @@ block content
 							each value, key in doc.clearance
 								span #{key}:#{value}
 						td #{doc.edited}
-						td: a.btn.btn-primary(href='/document/#{doc.id}')
+						td: a.btn.btn-primary(href='/app/document/view/#{doc.id}')
 							span.glyphicon.glyphicon-play

@@ -74,29 +74,14 @@ module.exports = function(express) {
 	// Set up all the access restrictions
 	var access = [
 		{
-			url: '/admin',
+			url: '/admin/*',
 			authentication : 'FORM',
 			rules: '[role=admin]'
 		},
 		{
-			url: '/document/list',
-			authentication : 'FORM',
-			rules: '[role=admin] || [role=user]'
-		},
-		{
-			url: '/user/list',
+			url: '/app/*',
 			authentication: 'FORM',
 			rules: '[role=admin] || [role=user]'
-		},
-		{
-			url: '/user/dash',
-			authentication: 'FORM',
-			rules: '[role=admin] || [role=user]'
-		},
-		{
-			url: '/user/list/*',
-			authentication: 'FORM',
-			rules: '[role=admin]'
 		}
 	];
 
@@ -104,7 +89,7 @@ module.exports = function(express) {
 		var permissions = [];
 
 		_.each(doc.clearance, function(clearance) {
-			console.log('Adding permission "' + clearance + '" to "/document/' + docId + '"');
+			console.log('Adding permission "' + clearance + '" to "/app/document/' + docId + '"');
 			var permission = '[permission=' + clearance + ']';
 			permissions.push('permission');
 		});
