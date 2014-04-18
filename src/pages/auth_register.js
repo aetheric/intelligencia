@@ -1,12 +1,12 @@
 module.exports = function(express) {
 
-	express.get('/register', function(req, res) {
-		if (req.status.isAuthenticated()) {
+	express.get('/auth/register', function(req, res) {
+		if (req.subject.isAuthenticated()) {
 			res.redirect('/app/user/dash');
 			return;
 		}
 
-		res.render('register', {
+		res.render('auth_register', {
 			title: 'Register'
 		});
 	});

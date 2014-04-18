@@ -110,8 +110,8 @@ module.exports = function(express, fnDir) {
 		rememberMe: true,
 		secure: false, // whether to use secured cookies or not
 		credentialsMatcher: 'sha256',
-		loginUrl: '/login',
-		logoutUrl: '/logout',
+		loginUrl: '/auth/login',
+		logoutUrl: '/auth/logout',
 		usernameParam: 'username',
 		passwordParam: 'password',
 		acl: access

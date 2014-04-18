@@ -29,8 +29,8 @@ mixin navlink(pagetitle, path)
 
 			ul.nav.navbar-nav.navbar-right
 				if auth.isValid
-					+navlink('Sign-out', '/logout')
-				else if req.url.match('^/login')
-					+navlink('Register', '/register')
+					+navlink('Sign-out', '/auth/logout')
+				else if req.url.match('^/auth/login')
+					+navlink('Register', '/auth/register')
 				else
-					+navlink('Sign-in', '/login')
+					+navlink('Sign-in', '/auth/login')

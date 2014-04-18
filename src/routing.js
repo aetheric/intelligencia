@@ -7,7 +7,7 @@ module.exports = function(express, fnDir) {
 
 	// Redirect root requests to the home page.
 	express.get('/', function(req, res) {
-		res.redirect(301, '/login');
+		res.redirect(301, '/auth/login');
 	});
 
 	var pagesDir = fnDir('/pages');
