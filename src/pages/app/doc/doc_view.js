@@ -12,7 +12,7 @@ module.exports = function(express, data, page) {
 				res.render(page.template, {
 					title: 'Document View',
 					doc: doc,
-					content: data.fnRedact(doc)
+					content: data.fnRedact(docJson, req.subject)
 				});
 			});
 		});
