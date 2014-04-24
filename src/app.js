@@ -20,6 +20,7 @@ var data = {
 require('./utils/utils')(data);
 require('./utils/pagescan')(data);
 require('./utils/redacter')(data);
+require('./utils/mongo')(data);
 
 // init and set up express.
 var express = require('./express')(data);
