@@ -6,47 +6,97 @@ block content
 		h1 User Dashboard
 
 	.row
-		.col-md-12
-			form(role='form', name='changedetails')
+
+		.col-md-6: form.form-horizontal.panel.panel-default(
+			role='form',
+			name='changedetails',
+			method='post'
+		)
+
+			.panel-heading
+				h3 Edit Details
+
+			.panel-body
 
 				.form-group
-					label(for='username') Username
-					input#username.form-control(
-						type='text',
-						name='username',
-						value=user.username
-					)
+					label.control-label.col-sm-2(for='username') Username
+					.col-sm-10
+						input#username.form-control(
+							type='text',
+							name='username',
+							value=user.username,
+							required=true
+						)
 
 				.form-group
-					label(for='email') Email
-					input#email.form-control(
-						type='email',
-						name='email',
-						value=user.email
-					)
-
-				button.btn.btn-default(type='submit') Submit
-
-	.row
-		.col-md-12
-			form(role='form', name='changepwd')
+					label.control-label.col-sm-2(for='email') Email
+					.col-sm-10
+						input#email.form-control(
+							type='email',
+							name='email',
+							value=user.email,
+							required=true
+						)
 
 				.form-group
-					label(for='password1') Password
-					input#password1.form-control(
-						type='password',
-						name='password1',
-						placeholder='Your new password',
-						autocomplete='false'
-					)
+					label.control-label.col-sm-2(for='diatribe') Diatribe
+					.col-sm-10
+						input#diatribe.form-control(
+							type='text',
+							name='diatribe',
+							value=user.diatribe
+						)
 
 				.form-group
-					label(for='password2') Confirm
-					input#password2.form-control(
-						type='password',
-						name='password2',
-						placeholder='Repeat it again',
-						autocomplete='false'
-					)
+					label.control-label.col-sm-2(for='city') City
+					.col-sm-10
+						input#city.form-control(
+							type='text',
+							name='city',
+							value=user.city
+						)
 
-				button.btn.btn-primary(type='submit') Change Password
+			.panel-footer
+
+				.form-group
+					.col-sm-offset-2.col-sm-10
+						button.btn.btn-primary.pull-right(type='submit')
+							| Submit
+
+		.col-md-6: form.form-horizontal.panel.panel-default(
+			role='form',
+			name='changepwd',
+			method='post'
+		)
+
+			.panel-heading
+				h3 Change Password
+
+			.panel-body
+
+				.form-group
+					label.control-label.col-sm-2(for='password1') Password
+					.col-sm-10
+						input#password1.form-control(
+							type='password',
+							name='password1',
+							placeholder='Your new password',
+							autocomplete='false'
+						)
+
+				.form-group
+					label.control-label.col-sm-2(for='password2') Confirm
+					.col-sm-10
+						input#password2.form-control(
+							type='password',
+							name='password2',
+							placeholder='Repeat it again',
+							autocomplete='false'
+						)
+
+			.panel-footer
+
+				.form-group
+					.col-sm-offset-2.col-sm-10
+						button.btn.btn-primary.pull-right(type='submit')
+							| Change Password
