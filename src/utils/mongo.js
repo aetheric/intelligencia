@@ -1,5 +1,6 @@
 module.exports = function(data) {
-	var mongo = require('mongodb').MongoClient;
+	var mongo = require('mongodb');
+	var client = mongo.MongoClient;
 	var format = require('format');
 
 	var db = {
@@ -12,11 +13,15 @@ module.exports = function(data) {
 
 	var dburi = format('mongodb://%s:%s@%s:%d/%s', db.user, db.pass, db.host, db.port, db.path);
 
-	return data.fnMongo = function(callback) {
-		mongo.connect(dburi, function(err, db) {
+	data.fnMongo = function(callback) {
+		client.connect(dburi, function(err, db) {
 			if(err) throw err;
 			callback(db);
 		});
-	}
+	};
+
+	data.fnMongoId = function(idString) {
+		return new mongo.ObjectID(idString);
+	};
 
 };
