@@ -4,3 +4,49 @@ block content
 
 	.page-header
 		h1 User Dashboard
+
+	.row
+		.col-md-12
+			form(role='form', name='changedetails')
+
+				.form-group
+					label(for='username') Username
+					input#username.form-control(
+						type='text',
+						name='username',
+						value=user.username
+					)
+
+				.form-group
+					label(for='email') Email
+					input#email.form-control(
+						type='email',
+						name='email',
+						value=user.email
+					)
+
+				button.btn.btn-default(type='submit') Submit
+
+	.row
+		.col-md-12
+			form(role='form', name='changepwd')
+
+				.form-group
+					label(for='password1') Password
+					input#password1.form-control(
+						type='password',
+						name='password1',
+						placeholder='Your new password',
+						autocomplete='false'
+					)
+
+				.form-group
+					label(for='password2') Confirm
+					input#password2.form-control(
+						type='password',
+						name='password2',
+						placeholder='Repeat it again',
+						autocomplete='false'
+					)
+
+				button.btn.btn-primary(type='submit') Change Password
