@@ -4,7 +4,15 @@ module.exports = function(express, data, page) {
 	express.get(page.path, function(req, res) {
 
 		if (req.subject && req.subject.isAuthenticated()) {
-			res.redirect(req.param.redirect || defaultRedirect);
+			req.subject.hasRole('user', function(user) {
+				if (user) {
+					res.redirect(req.param.redirect || defaultRedirect);
+				} else {
+					res.redirect(data.pages.auth_unverified.path);
+				}
+			});
+
+			return;
 		}
 
 		res.render(page.template, {
