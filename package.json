@@ -19,6 +19,8 @@
 		"underscore": "1.6.0",
 		"express": "3.4.7",
 		"jade": "0.35.0",
+		"format": "0.2.1",
+		"mongodb": "1.4.2",
 		"newrelic": "1.2.0",
 		"security-middleware": "0.0.3-rc2"
 	},

@@ -1,20 +1,10 @@
 module.exports = function(express, data, page) {
-	var fs = require('fs');
-	var docDir = data.fnDir('/../etc/documents');
 
 	express.get(page.path + '/:docId', function(req, res) {
-		var docFile = docDir + '/' + req.params.docId + '.json';
+		var docId = data.fnMongoId(req.params.docId);
 
-		fs.exists(docFile, function(exists) {
-			if (!exists) {
-				res.render(data.pages.error_missing.template, {
-					title: 'Document Not Found'
-				});
-
-				return;
-			}
-
-			fs.readFile(docFile, function(err, document) {
+		data.fnMongo(function(db) {
+			db.collection('docs').find({ _id: docId }).nextObject(function(err, doc) {
 				if (err) {
 					res.render(data.pages.error_server.template, {
 						title: 'Error Reading Document'
@@ -23,15 +13,14 @@ module.exports = function(express, data, page) {
 					return;
 				}
 
-				var docJson = JSON.parse(document);
-
 				res.render(page.template, {
 					title: 'Document View',
-					doc: docJson,
-					content: data.fnRedact(docJson)
+					doc: doc,
+					content: data.fnRedact(doc)
 				});
 			});
 		});
+
 	});
 
 };
