@@ -17,8 +17,8 @@ module.exports = function(express, data, page) {
 
 		res.render(page.template, {
 			title: 'Sign-in',
-			username: req.param.username,
-			redirect: req.param.redirect || defaultRedirect
+			username: req.flash('username') || req.param.username,
+			redirect: req.flash('redirect') || req.param.redirect || defaultRedirect
 		});
 	});
 
