@@ -20,7 +20,9 @@ html
 
 		#wrap: #content
 			include navbar
-			.container: block content
+			.container
+				include flashmsg
+				block content
 
 		#footer
 			include footer

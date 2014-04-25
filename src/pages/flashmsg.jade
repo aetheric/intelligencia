@@ -1,0 +1,6 @@
+- var mappings = { error: 'danger', info: 'info', warn: 'warning', success: 'success' };
+
+if message
+	.alert.alert-dismissable(class='alert-#{mappings[message.type]}')
+		button.close(type='button', data-dismiss='alert', aria-hidden='true') &times;
+		p #{message.text}
