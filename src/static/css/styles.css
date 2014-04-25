@@ -30,3 +30,11 @@ body:before {
 #footer .navbar {
 	margin-bottom: 0;
 }
+
+.hline-top {
+	border-top: 1px solid #eee;
+}
+
+.hline-bottom {
+	border-bottom: 1px solid #eee;
+}

@@ -4,3 +4,61 @@ block content
 
 	.page-header
 		h1 Register
+
+	form.form-horizontal(role='form', method='post')
+
+		.row
+
+			.col-md-4.col-md-push-8.panel.panel-default: .panel-body
+				p: em
+					| So, you want to get into the intelligence game, eh? Well, this'll only get you a foot in the
+					| door. You'll need to prove that you're trustworthy before you can start dealing in real intel.
+					| Fill out your details in the form below, and we'll be in touch. However, if you just have some
+					| dirt to pass on, feel free to send it in. The drop is at
+					| <a href="mailto:intelligencia@aetheric.co.nz">intelligencia@aetheric.co.nz</a>.
+
+			.col-md-offset-1.col-md-6.col-md-pull-4.panel.panel-default
+				.panel-body
+
+					.form-group
+						label.control-label.col-sm-3(for='username') Username
+						.col-sm-9
+							input#username.form-control(
+								type='text',
+								name='username',
+								value=username,
+								required=true
+							)
+
+					.form-group
+						label.control-label.col-sm-3(for='email') Email
+						.col-sm-9
+							input#email.form-control(
+								type='email',
+								name='email',
+								value=email,
+								required=true
+							)
+
+					.form-group
+						label.control-label.col-sm-3(for='password1') Password
+						.col-sm-9
+							input#password1.form-control(
+								type='password',
+								name='password1',
+								required=true
+							)
+
+					.form-group
+						label.control-label.col-sm-3(for='password2') Confirm
+						.col-sm-9
+							input#password2.form-control(
+								type='password',
+								name='password2',
+								required=true
+							)
+
+		.row: .col-md-12.hline-top
+			.form-group: .col-md-4.col-md-offset-4.panel-body
+				button.btn.btn-lg.btn-block.btn-primary(type='submit')
+					| Submit

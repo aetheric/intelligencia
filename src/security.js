@@ -7,6 +7,10 @@ module.exports = function(express, data) {
 	var credentialsMatcher = utils.sha256CredentialsMatcher;
 	var defaultPwd = credentialsMatcher.encrypt('changeme');
 
+	data.fnEncryptPass = function(password) {
+		return credentialsMatcher.encrypt(password);
+	};
+
 	var config = {
 		debug: data.env.dev || false,
 		realmName: 'intelligencia',
