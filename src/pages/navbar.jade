@@ -20,7 +20,7 @@ mixin navlink(pagetitle, path)
 
 			ul.nav.navbar-nav
 				if auth.isValid
-					+navlink('Documents', '/app/document/list')
+					+navlink('Documents', '/app/doc/list')
 					if auth.isAdmin
 						+navlink('User List', '/app/user/list')
 					+navlink('User Dashboard', '/app/user/dash')

@@ -1,5 +1,4 @@
 module.exports = function(express, data) {
-	var fs = require('fs');
 	var _ = require('underscore');
 
 	var security = require('security-middleware');
@@ -8,7 +7,7 @@ module.exports = function(express, data) {
 	var inMemoryStore = utils.inMemoryStore;
 	var credentialsMatcher = utils.sha256CredentialsMatcher;
 
-	var defaultPwd = credentialsMatcher.encrypt('changeit');
+	var defaultPwd = credentialsMatcher.encrypt('changeme');
 	var levels = _.extend([
 		'alpha',
 		'beta',
@@ -23,53 +22,39 @@ module.exports = function(express, data) {
 		epsilon: 4
 	});
 
-	function scrape(path, callback) {
-		var targetDir = data.fnDir('/../etc' + path);
-		console.log('Scraping "' + targetDir + '" for data.');
-		fs.readdir(targetDir, function(err, files) {
+	data.fnMongo(function(db) {
+		db.collection('users').find().each(function(err, doc) {
 			if (err) throw err;
+			if (!doc) return;
 
-			_.each(files, function(file) {
-				if (!file.match(/\.json$/)) return;
+			if (!doc.password) {
+				doc.password = defaultPwd;
+			}
 
-				fs.readFile(targetDir + '/' + file, function(err, document) {
-					if (err) throw err;
-
-					var data = JSON.parse(document);
-					var id = file.substring(0, file.lastIndexOf('.json'));
-					callback(data, id);
-				});
-			});
+			inMemoryStore.storeAccount(doc);
 		});
-	}
-
-	// Set up all the roles.
-	scrape('/codes', function(code, codeId) {
-		_.inject(levels, function(privileges, level) {
-			if (levels[code.clearance] > levels[level])
-				return privileges;
-
-			var roleName = codeId + ':' + level;
-			privileges.push('[privilege=' + roleName + ']');
-			console.log('Adding role "' + roleName + '" with privileges "' + privileges.join(', ') + '"');
-
-			inMemoryStore.storeRole({
-				name: codeId + ':' + level,
-				privileges: privileges
-			});
-
-			return privileges;
-		}, []);
 	});
 
-	// Set up all the users
-	scrape('/users', function(user, userId) {
-		console.log('Loading user "' + userId + '"');
-		user.clearance.push('user');
-		inMemoryStore.storeAccount({
-			username: userId,
-			password: user.password || defaultPwd,
-			roles: user.clearance
+	data.fnMongo(function(db) {
+		db.collection('codes').find().each(function(err, doc) {
+			if (err) throw err;
+			if (!doc) return;
+
+			_.inject(levels, function(privileges, level) {
+				if (levels[doc.clearance] > levels[level])
+					return privileges;
+
+				var roleName = doc.title + ':' + level;
+				privileges.push('[privilege=' + roleName + ']');
+				console.log('Adding role "' + roleName + '" with privileges "' + privileges.join(', ') + '"');
+
+				inMemoryStore.storeRole({
+					name: roleName,
+					privileges: privileges
+				});
+
+				return privileges;
+			}, []);
 		});
 	});
 
@@ -87,19 +72,24 @@ module.exports = function(express, data) {
 		}
 	];
 
-	scrape('/documents', function(doc, docId) {
-		var permissions = [];
+	data.fnMongo(function(db) {
+		db.collection('docs').find().each(function(err, doc) {
+			if (err) throw err;
+			if (!doc) return;
 
-		_.each(doc.clearance, function(clearance) {
-			console.log('Adding permission "' + clearance + '" to "/app/document/view/' + docId + '"');
-			var permission = '[permission=' + clearance + ']';
-			permissions.push('permission');
-		});
+			var permissions = [];
 
-		access.push({
-			url: '/app/document/view/' + docId,
-			authentication: 'FORM',
-			rules: '[role=admin] || ' + permissions.join(' && ')
+			_.each(doc.clearance, function(clearance) {
+				console.log('Adding permission "' + clearance + '" to "/app/document/view/' + doc.title + '"');
+				var permission = '[permission=' + clearance + ']';
+				permissions.push('permission');
+			});
+
+			access.push({
+				url: '/app/doc/view/' + doc._id,
+				authentication: 'FORM',
+				rules: '[role=admin] || ' + permissions.join(' && ')
+			});
 		});
 	});
 
@@ -107,7 +97,7 @@ module.exports = function(express, data) {
 		debug: false,
 		realmName: 'Express-security',
 		store: inMemoryStore,
-		rememberMe: true,
+		rememberMe: false,
 		secure: false, // whether to use secured cookies or not
 		credentialsMatcher: 'sha256',
 		loginUrl: '/auth/login',
