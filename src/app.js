@@ -3,19 +3,41 @@
 // Start up newrelic monitoring
 require('newrelic');
 
-// initialise the context and port vars
-var port = process.env.PORT || 8015;
-var env = process.env.NODE_ENV || 'development';
+var _ = require('underscore');
 
 var data = {
 
+	env: {
+		current: process.env.NODE_ENV || 'development',
+		port: process.env.PORT || 8015
+	},
+
 	pages: {},
+
+	clearances: _.extend([
+		'alpha',
+		'beta',
+		'gamma',
+		'delta',
+		'epsilon'
+	], {
+		alpha: 0,
+		beta: 1,
+		gamma: 2,
+		delta: 3,
+		epsilon: 4
+	}),
 
 	fnDir: function(path) {
 		return __dirname + path;
 	}
 
 };
+
+_.extend(data.env, {
+	dev: data.env.current === 'development',
+	prod: data.env.current === 'production'
+});
 
 require('./utils/utils')(data);
 require('./utils/pagescan')(data);
@@ -30,7 +52,7 @@ require('./security')(express, data);
 require('./routing')(express, data);
 
 // Start the server
-console.log("Starting server in ", env);
-console.log("Express starting on port ", port);
+console.log("Starting server in ", data.env.current);
+console.log("Express starting on port ", data.env.port);
 
-express.listen(port);
+express.listen(data.env.port);

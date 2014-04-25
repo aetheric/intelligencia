@@ -4,74 +4,92 @@ module.exports = function(express, data) {
 	var security = require('security-middleware');
 	var utils = require('security-middleware/lib/security.js');
 
-	var inMemoryStore = utils.inMemoryStore;
 	var credentialsMatcher = utils.sha256CredentialsMatcher;
-
 	var defaultPwd = credentialsMatcher.encrypt('changeme');
-	var levels = _.extend([
-		'alpha',
-		'beta',
-		'gamma',
-		'delta',
-		'epsilon'
-	], {
-		alpha: 0,
-		beta: 1,
-		gamma: 2,
-		delta: 3,
-		epsilon: 4
-	});
 
-	data.fnMongo(function(db) {
-		db.collection('users').find().each(function(err, doc) {
-			if (err) throw err;
-			if (!doc) return;
-
-			if (!doc.password) {
-				doc.password = defaultPwd;
+	var config = {
+		debug: data.env.dev || false,
+		realmName: 'intelligencia',
+		rememberMe: false,
+		secure: false, // whether to use secured cookies or not
+		credentialsMatcher: 'sha256',
+		loginUrl: '/auth/login',
+		logoutUrl: '/auth/logout',
+		usernameParam: 'username',
+		passwordParam: 'password',
+		acl: [
+			{
+				url: '/admin/*',
+				authentication : 'FORM',
+				rules: '[role=admin]'
+			},
+			{
+				url: '/app/*',
+				authentication: 'FORM',
+				rules: '[role=admin] || [role=user]'
 			}
+		]
+	};
 
-			inMemoryStore.storeAccount(doc);
+	var Store = function() {};
+
+	Store.prototype.lookup = function(username, callback) {
+		data.fnMongo(function(db) {
+			db.collection('users').find({
+				username: username
+			}).nextObject(function(err, user) {
+				if (err) callback(err);
+				if (!user) callback();
+
+				if (!user.password) {
+					user.password = defaultPwd;
+				}
+
+				callback(err, user);
+			});
 		});
-	});
+	};
 
-	data.fnMongo(function(db) {
-		db.collection('codes').find().each(function(err, doc) {
-			if (err) throw err;
-			if (!doc) return;
-
-			_.inject(levels, function(privileges, level) {
-				if (levels[doc.clearance] > levels[level])
-					return privileges;
-
-				var roleName = doc.title + ':' + level;
-				privileges.push('[privilege=' + roleName + ']');
-				console.log('Adding role "' + roleName + '" with privileges "' + privileges.join(', ') + '"');
-
-				inMemoryStore.storeRole({
-					name: roleName,
-					privileges: privileges
-				});
-
-				return privileges;
-			}, []);
+	Store.prototype.loadUserRoles = function(username, callback) {
+		data.fnMongo(function(db) {
+			db.collection('users').find({
+				username: username
+			}).nextObject(function(err, user) {
+				if (err) callback(err);
+				if (!user) callback();
+				callback(user.roles);
+			});
 		});
-	});
+	};
 
-	// Set up all the access restrictions
-	var access = [
-		{
-			url: '/admin/*',
-			authentication : 'FORM',
-			rules: '[role=admin]'
-		},
-		{
-			url: '/app/*',
-			authentication: 'FORM',
-			rules: '[role=admin] || [role=user]'
-		}
-	];
+	Store.prototype.loadUserPrivileges = function(username, callback) {
+		data.fnMongo(function(db) {
+			db.collection('users').find({
+				username: username
+			}).nextObject(function(err, user) {
+				if (err) callback(err);
+				if (!user) callback();
+				callback(user.privileges);
+			});
+		});
+	};
 
+	Store.prototype.loadRolePrivileges = function(roleName, callback) {
+		data.fnMongo(function(db) {
+			db.collection('codes').find({
+				title: roleName
+			}).nextObject(function(err, code) {
+				if (err) callback(err);
+				if (!code) callback();
+				callback(code.implies);
+			});
+		});
+	};
+
+	config.store = new Store();
+	express.use(security(config));
+
+	// Load up all the doc permissions
 	data.fnMongo(function(db) {
 		db.collection('docs').find().each(function(err, doc) {
 			if (err) throw err;
@@ -85,27 +103,13 @@ module.exports = function(express, data) {
 				permissions.push('permission');
 			});
 
-			access.push({
+			config.acl.push({
 				url: '/app/doc/view/' + doc._id,
 				authentication: 'FORM',
 				rules: '[role=admin] || ' + permissions.join(' && ')
 			});
 		});
 	});
-
-	express.use(security({
-		debug: false,
-		realmName: 'Express-security',
-		store: inMemoryStore,
-		rememberMe: false,
-		secure: false, // whether to use secured cookies or not
-		credentialsMatcher: 'sha256',
-		loginUrl: '/auth/login',
-		logoutUrl: '/auth/logout',
-		usernameParam: 'username',
-		passwordParam: 'password',
-		acl: access
-	}));
 
 	// Add the current user to the rendering context.
 	express.use(function(req, res, next) {
