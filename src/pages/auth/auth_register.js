@@ -62,7 +62,12 @@ module.exports = function(express, data, page) {
 						return;
 					}
 
-					req.flash('username', item.username);
+					req.flash('username', item[0].username);
+					req.flash('message', {
+						type: 'success',
+						text: 'You have successfully registered. Please wait for verification.'
+					});
+
 					res.redirect(data.pages.auth_login.path);
 				});
 			});
