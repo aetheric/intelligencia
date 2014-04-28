@@ -3,7 +3,7 @@ module.exports = function(data) {
 	var Express = require('express');
 	var express = Express();
 
-	var flash = require('connect-flash');
+	var flash = require('./utils/flash');
 
 	// configure the express server
 	express.configure(function() {

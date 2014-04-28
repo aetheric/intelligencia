@@ -43,7 +43,10 @@ module.exports = function(express, data) {
 				username: username
 			}).nextObject(function(err, user) {
 				if (err) callback(err);
-				if (!user) callback();
+				if (!user) {
+					callback();
+					return;
+				}
 
 				if (!user.password) {
 					user.password = defaultPwd;

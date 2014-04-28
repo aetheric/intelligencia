@@ -3,7 +3,6 @@ module.exports = function(express, data) {
 
 	express.use(function(req, res, next) {
 		res.locals.req = req;
-		res.locals.message = req.flash('message');
 		next();
 	});
 

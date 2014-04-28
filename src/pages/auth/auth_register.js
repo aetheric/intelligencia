@@ -2,10 +2,10 @@ module.exports = function(express, data, page) {
 
 	express.get(page.path, function(req, res) {
 		if (req.subject.isAuthenticated()) {
-			req.flash('message', {
+			res.flash.message = {
 				type: 'info',
 				text: 'You\'re already authenticated, you don\'t need to sign-in.'
-			});
+			};
 
 			res.redirect(data.pages.app_user_dash.path);
 			return;
@@ -13,8 +13,8 @@ module.exports = function(express, data, page) {
 
 		res.render(page.template, {
 			title: 'Register',
-			username: req.flash('username'),
-			email: req.flash('email')
+			username: req.flash.username,
+			email: req.flash.email
 		});
 	});
 
@@ -26,22 +26,22 @@ module.exports = function(express, data, page) {
 
 			users.find({ email: req.body.email }).nextObject(function(err, item) {
 				if (err) {
-					req.flash('message', {
+					res.flash.message = {
 						type: 'error',
 						text: err.message
-					});
+					};
 
 					res.redirect(data.pages.error_server.path);
 					return;
 				}
 
 				if (item) {
-					req.flash('username', req.body.username);
-					req.flash('email', req.body.email);
-					req.flash('message', {
+					res.flash.username = req.body.username;
+					res.flash.email = req.body.email;
+					res.flash.message = {
 						type: 'error',
 						text: 'That user already exists!'
-					});
+					};
 
 					res.redirect(page.path);
 					return;
@@ -53,20 +53,20 @@ module.exports = function(express, data, page) {
 					email: req.body.email
 				}, { safe: true }, function(err, item) {
 					if (err) {
-						req.flash('message', {
+						res.flash.message = {
 							type: 'error',
 							text: err.message
-						});
+						};
 
 						res.redirect(data.pages.error_server.path);
 						return;
 					}
 
-					req.flash('username', item[0].username);
-					req.flash('message', {
+					res.flash.username = item[0].username;
+					res.flash.message = {
 						type: 'success',
 						text: 'You have successfully registered. Please wait for verification.'
-					});
+					};
 
 					res.redirect(data.pages.auth_login.path);
 				});
