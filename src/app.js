@@ -9,7 +9,14 @@ var data = {
 
 	env: {
 		current: process.env.NODE_ENV || 'development',
-		port: process.env.PORT || 8015
+		port: process.env.PORT || 8015,
+		db: {
+			user: process.env.DB_USER || 'intelligencia',
+			pass: process.env.DB_PASS || 'notpassword',
+			host: process.env.DB_HOST || 'oceanic.mongohq.com',
+			port: process.env.DB_PORT || '10096',
+			path: process.env.DB_PATH || 'app24119285'
+		}
 	},
 
 	pages: {},

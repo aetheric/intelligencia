@@ -3,6 +3,7 @@ module.exports = function(data) {
 	var Express = require('express');
 	var express = Express();
 
+	var i18n = require('./utils/i18n');
 	var flash = require('./utils/flash');
 
 	// configure the express server
@@ -24,6 +25,8 @@ module.exports = function(data) {
 		}));
 
 		express.use(flash());
+
+		i18n(express, data);
 	});
 
 	return express;
