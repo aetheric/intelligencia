@@ -1,0 +1,36 @@
+extends ../../layout
+
+block content
+
+	.page-header
+		h1 Submit Intelligence
+
+	form.form-horizontal(role='form', method='post')
+
+		.row
+
+			.col-md-4.col-md-push-8.panel.panel-default: .panel-body
+				p: em
+					| Put the text in the box, then hit submit. There's not much else to it, really.
+
+			.col-md-offset-1.col-md-6.col-md-pull-4.panel.panel-default
+				.panel-body
+
+					.form-group
+						label.control-label.col-sm-3(for='content') Content
+						.col-sm-9
+							textarea#content.form-control(
+								name='content',
+								value=content,
+								required=true,
+								autofocus=true
+							)
+
+		.row
+
+			.col-md-12.hline-top
+
+				.form-group
+					.col-md-4.col-md-offset-4.panel-body
+						button.btn.btn-lg.btn-block.btn-primary(type='submit')
+							| Submit
