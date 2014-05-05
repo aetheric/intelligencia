@@ -22,4 +22,8 @@ module.exports = function(express, data, page) {
 		});
 	});
 
+	express.post(page.path, function(req, res) {
+		// TODO: Check login credentials.
+	});
+
 };
