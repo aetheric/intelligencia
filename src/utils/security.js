@@ -1,4 +1,5 @@
 module.exports = function(express, data) {
+	var _ = require('underscore');
 
 	function getSession(request) {
 		var session = request.session;
@@ -17,7 +18,7 @@ module.exports = function(express, data) {
 	}
 
 	function redirect(response, target, flash) {
-		_.extend(response.flash, flashi || {});
+		_.extend(response.flash, flash || {});
 		response.redirect(target);
 	}
 
@@ -34,6 +35,7 @@ module.exports = function(express, data) {
 
 		//TODO: Access checks against user.roles
 
+		next();
 	});
 
 };
