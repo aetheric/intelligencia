@@ -1,24 +1,22 @@
 module.exports = function(express, data, page) {
+	var sha256 = require('crypto-js/sha256');
+
 	var defaultRedirect = data.pages.app_doc_list.path;
+	function getRedirect(req) {
+		return req.flash.redirect || req.param.redirect || defaultRedirect;
+	}
 
 	express.get(page.path, function(req, res) {
 
-		if (req.subject && req.subject.isAuthenticated()) {
-			req.subject.hasRole('user', function(user) {
-				if (user) {
-					res.redirect(req.param.redirect || defaultRedirect);
-				} else {
-					res.redirect(data.pages.auth_unverified.path);
-				}
-			});
-
+		if (req.session.user) {
+			res.redirect(getRedirect(req));
 			return;
 		}
 
 		res.render(page.template, {
 			title: 'Sign-in',
 			username: req.flash.username || req.param.username,
-			redirect: req.flash.redirect || req.param.redirect || defaultRedirect
+			redirect: getRedirect(req)
 		});
 	});
 
@@ -46,8 +44,7 @@ module.exports = function(express, data, page) {
 			db.collection('users').find({ username: username }).nextObject(function(err, user) {
 				if (err) throw err;
 
-				var hash = password;
-
+				var hash = sha256(username + password);
 				if (!user || user.password !== hash) {
 					res.flash.username = username;
 					res.flash.message = invalidmsg;
@@ -56,7 +53,7 @@ module.exports = function(express, data, page) {
 				}
 
 				req.session.user = user;
-				res.redirect(data.pages.user_dash.path);
+				res.redirect(getRedirect(req));
 			});
 		});
 

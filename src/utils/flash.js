@@ -11,6 +11,6 @@ module.exports = function flash() {
 		res.locals.flash = req.flash = session.flash || {};
 		session.flash = res.flash = {};
 
-		next();
+		return next();
 	};
 };

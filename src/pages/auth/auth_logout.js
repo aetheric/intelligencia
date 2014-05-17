@@ -11,7 +11,7 @@ module.exports = function(express, data, page) {
 
 		// Null out the user principal.
 		session.user = null;
-		// TODO: Invalidate the session and issue a new one.
+		session.destroy();
 
 		res.flash.message = {
 			type: 'success',

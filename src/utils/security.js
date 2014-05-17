@@ -26,6 +26,15 @@ module.exports = function(express, data) {
 		var session = getSession(req);
 		var user = session.user;
 
+		var auth = res.locals.auth = {
+			isValid: false,
+			isAdmin: false
+		};
+
+		if (/^\/auth/g.test(req.path)) {
+			return next();
+		}
+
 		if (!user) {
 			setError(res, 'Please sign-in to access the requested page.');
 			return redirect(res, data.pages.auth_login.path, {
@@ -33,9 +42,18 @@ module.exports = function(express, data) {
 			});
 		}
 
+		_.extend(auth, {
+			isValid: true,
+			isAdmin: _.contains(user.roles, 'admin')
+		});
+
+		if (!_.contains(user.roles, 'user')) {
+			return res.redirect(data.pages.auth_unverified.path);
+		}
+
 		//TODO: Access checks against user.roles
 
-		next();
+		return next();
 	});
 
 };

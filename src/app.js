@@ -55,7 +55,7 @@ require('./utils/mongo')(data);
 var express = require('./express')(data);
 
 // Configure security and routing.
-require('./security')(express, data);
+require('./utils/security')(express, data);
 require('./routing')(express, data);
 
 // Start the server
