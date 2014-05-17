@@ -1,0 +1,18 @@
+extends ../layout
+
+block content
+
+	.page-header
+		h1 Password Recovery
+
+	form(role='form', method='post')
+
+		input#email(
+			type='email',
+			name='email',
+			value=email
+		)
+
+		input#submit(
+			type='submit'
+		)
