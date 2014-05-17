@@ -21,7 +21,13 @@ module.exports = function(express, data, page) {
 	express.post(page.path, function(req, res) {
 		//TODO: validate
 
-		data.fnMongo(function(db) {
+		data.fnMongo(function(err, db) {
+			if (err) {
+				res.flash.message('error', err.message);
+				res.redirect(data.pages.error_server.path);
+				return;
+			}
+
 			var users = db.collection('users');
 
 			users.find({ email: req.body.email }).nextObject(function(err, item) {

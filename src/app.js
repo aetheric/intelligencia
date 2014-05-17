@@ -10,13 +10,20 @@ var data = {
 	env: {
 		current: process.env.NODE_ENV || 'development',
 		port: process.env.PORT || 8015,
+
 		db: {
 			user: process.env.DB_USER || 'intelligencia',
-			pass: process.env.DB_PASS || 'notpassword',
+			pass: process.env.DB_PASS,
 			host: process.env.DB_HOST || 'oceanic.mongohq.com',
 			port: process.env.DB_PORT || '10096',
 			path: process.env.DB_PATH || 'app24119285'
+		},
+
+		mail: {
+			user: process.env.MAIL_USER || 'intelligencia@aetheric.co.nz',
+			pass: process.env.MAIL_PASS
 		}
+
 	},
 
 	pages: {},
@@ -50,6 +57,7 @@ require('./utils/utils')(data);
 require('./utils/pagescan')(data);
 require('./utils/redacter')(data);
 require('./utils/mongo')(data);
+require('./utils/mail')(data);
 
 // init and set up express.
 var express = require('./express')(data);

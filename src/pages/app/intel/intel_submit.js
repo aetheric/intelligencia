@@ -13,7 +13,13 @@ module.exports = function(express, data, page) {
 
 		var username = req.subject.principal.name;
 
-		data.fnMongo(function(db) {
+		data.fnMongo(function(err, db) {
+			if (err) {
+				res.flash.message('error', err.message);
+				res.redirect(data.pages.error_server.path);
+				return;
+			}
+
 			db.collection('info').insert({
 				submitter: username,
 				submitted: new Date(),

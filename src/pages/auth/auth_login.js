@@ -40,7 +40,13 @@ module.exports = function(express, data, page) {
 			return;
 		}
 
-		data.fnMongo(function(db) {
+		data.fnMongo(function(err, db) {
+			if (err) {
+				res.flash.message('error', err.message);
+				res.redirect(data.pages.error_server.path);
+				return;
+			}
+
 			db.collection('users').find({ username: username }).nextObject(function(err, user) {
 				if (err) throw err;
 

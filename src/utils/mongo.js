@@ -7,10 +7,7 @@ module.exports = function(data) {
 	var dburi = format('mongodb://%s:%s@%s:%d/%s', db.user, db.pass, db.host, db.port, db.path);
 
 	data.fnMongo = function(callback) {
-		client.connect(dburi, function(err, db) {
-			if(err) throw err;
-			callback(db);
-		});
+		client.connect(dburi, callback);
 	};
 
 	data.fnMongoId = function(idString) {

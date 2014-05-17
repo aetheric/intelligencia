@@ -3,7 +3,7 @@ module.exports = function(express, data, page) {
 	express.get(page.path, function(req, res) {
 		var username = req.subject.account.principal;
 
-		data.fnMongo(function(db) {
+		data.fnMongo(function(err, db) {
 			db.collection('users').find({ username: username }).nextObject(function(err, doc) {
 				if (err) {
 					res.render(data.pages.error_missing.template, {

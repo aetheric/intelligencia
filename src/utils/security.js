@@ -31,7 +31,7 @@ module.exports = function(express, data) {
 			isAdmin: false
 		};
 
-		if (/^\/auth/g.test(req.path)) {
+		if (/^\/(auth|error)/g.test(req.path)) {
 			return next();
 		}
 
