@@ -22,7 +22,7 @@
 		"format": "0.2.1",
 		"mongodb": "1.4.2",
 		"newrelic": "1.2.0",
-		"security-middleware": "0.0.3-rc2",
+		"crypto-js": "3.1.2-3",
 		"i18next": "1.7.4",
 		"i18next.mongoDb": "1.6.0"
 	},
