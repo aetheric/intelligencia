@@ -24,16 +24,26 @@ module.exports = function(data) {
 
 			db.collection('mail').find({ name: options.template }).nextObject(function(err, template) {
 				if (err) {
-					throw err;
+					console.error(error);
+					return;
 				} else if (!template) {
-					throw 'Mail template not found!';
+					console.warn('Mail template not found!');
+					return;
 				}
 
-				transport.sendMail(_.defaults(options, {
-					from: 'Intelligencia <intelligencia@aetheric.co.nz>',
-					html: asciidoc.$render(template.content, options.context),
-					text: renderPlain(template.content, options.context)
-				}), callback);
+				var mailOptions = options;
+				try {
+					_.defaults(mailOptions, {
+						from: 'Intelligencia <intelligencia@aetheric.co.nz>',
+						html: asciidoc.$render(template.content, options.context),
+						text: renderPlain(template.content, options.context)
+					});
+				} catch (error) {
+					console.error(error);
+					return;
+				}
+
+				transport.sendMail(mailOptions, callback);
 			});
 		});
 	};
