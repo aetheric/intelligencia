@@ -1,4 +1,5 @@
 module.exports = function(data) {
+	var _ = require('underscore');
 	var mail = require('nodemailer');
 	var asciidoc = require('asciidoctorjs-npm-wrapper').Asciidoctor;
 
