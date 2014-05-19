@@ -25,10 +25,10 @@ module.exports = function(data) {
 			db.collection('mail').find({ name: options.template }).nextObject(function(err, template) {
 				if (err) {
 					console.error(error);
-					return callback();
+					return callback(false);
 				} else if (!template) {
 					console.warn('Mail template not found!');
-					return callback();
+					return callback(false);
 				}
 
 				var mailOptions = options;
@@ -40,11 +40,11 @@ module.exports = function(data) {
 					});
 				} catch (error) {
 					console.error(error);
-					return callback();
+					return callback(false);
 				}
 
 				transport.sendMail(mailOptions, callback);
-				return callback();
+				return callback(true);
 			});
 		});
 	};

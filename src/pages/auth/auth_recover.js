@@ -55,8 +55,13 @@ module.exports = function(express, data, page) {
 							email: recovery.email,
 							code: recovery.code
 						}
-					}, function() {
-						res.flash.message('success', 'Recovery email sent to address.');
+					}, function(success) {
+						if (success) {
+							res.flash.message('success', 'Recovery email sent to address.');
+						} else {
+							res.flash.message('error', 'Something went wrong sending the recovery email. Please ' +
+								'contact the administrator for help.');
+						}
 						res.redirect(page.path);
 					});
 
