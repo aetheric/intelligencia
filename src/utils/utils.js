@@ -27,7 +27,7 @@ module.exports = function (data) {
 		if (!error) return false;
 
 		// log the error to the console.
-		console.error(error);
+		console.error(error.stack);
 
 		// Redirect to server error page with message.
 		res.flash.message('error', error.name + ' (' + error.code +  '): ' + error.message);

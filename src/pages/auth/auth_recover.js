@@ -47,14 +47,10 @@ module.exports = function(express, data, page) {
 							email: recovery.email,
 							code: recovery.code
 						}
-					}, function(success) {
-						if (success) {
-							res.flash.message('success', 'Recovery email sent to address.');
-						} else {
-							res.flash.message('error', 'Something went wrong sending the recovery email. Please ' +
-								'contact the administrator for help.');
-						}
+					}, function(err) {
+						if (data.fnHandleError(res, err)) return;
 
+						res.flash.message('success', 'Recovery email sent to provided address.');
 						res.redirect(page.path);
 					});
 
