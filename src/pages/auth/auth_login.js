@@ -1,5 +1,7 @@
 module.exports = function(express, data, page) {
 	var sha256 = require('crypto-js/sha256');
+	var _ = require('underscore');
+
 	var defaultRedirect = data.pages.app_doc_list.path;
 	function getRedirect(req) {
 		return req.flash.redirect || defaultRedirect;
@@ -37,14 +39,10 @@ module.exports = function(express, data, page) {
 		}
 
 		data.fnMongo(function(err, db) {
-			if (err) {
-				res.flash.message('error', err.message);
-				res.redirect(data.pages.error_server.path);
-				return;
-			}
+			if (data.fnHandleError(res, err)) return;
 
 			db.collection('users').find({ username: username }).nextObject(function(err, user) {
-				if (err) throw err;
+				if (data.fnHandleError(res, err)) return;
 
 				var hash = sha256(username + password);
 				if (!user || user.password !== hash) {

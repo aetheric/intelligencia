@@ -18,14 +18,10 @@ module.exports = function(express, data, page) {
 		}
 
 		data.fnMongo(function(err, db) {
-			if (err) {
-				res.flash.message('error', err.message);
-				res.redirect(data.pages.error_server.path);
-				return;
-			}
+			if (data.fnHandleError(res, err)) return;
 
 			db.collection('users').find({ email: email }).nextObject(function(err, user) {
-				if (err) throw err;
+				if (data.fnHandleError(res, err)) return;
 
 				if (!user) {
 					res.flash.email = email;
@@ -41,11 +37,7 @@ module.exports = function(express, data, page) {
 					email: email,
 					code: code
 				}, function(err, recovery) {
-					if (err) {
-						res.flash.message('error', err.message);
-						res.redirect(data.pages.error_server.path);
-						return;
-					}
+					if (data.fnHandleError(res, err)) return;
 
 					data.fnMail({
 						to: email,
@@ -62,6 +54,7 @@ module.exports = function(express, data, page) {
 							res.flash.message('error', 'Something went wrong sending the recovery email. Please ' +
 								'contact the administrator for help.');
 						}
+
 						res.redirect(page.path);
 					});
 

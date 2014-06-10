@@ -31,18 +31,10 @@ module.exports = function(express, data, page) {
 		}
 
 		data.fnMongo(function(err, db) {
-			if (err) {
-				res.flash.message('error', err.message);
-				res.redirect(data.pages.error_server.path);
-				return;
-			}
+			if (data.fnHandleError(res, err)) return;
 
 			db.collection('recovery').find({ code: code, email: email }).nextObject(function(err, recovery) {
-				if (err) {
-					res.flash.message('error', err.message);
-					res.redirect(data.pages.error_server.path);
-					return;
-				}
+				if (data.fnHandleError(res, err)) return;
 
 				if (!recovery) {
 					res.flash.message('error', 'The recovery code you just used has expired.');
@@ -52,11 +44,7 @@ module.exports = function(express, data, page) {
 
 				var users = db.collection('users');
 				users.find({ _id: recovery.userId }).nextObject(function(err, user) {
-					if (err) {
-						res.flash.message('error', err.message);
-						res.redirect(data.pages.error_server.path);
-						return;
-					}
+					if (data.fnHandleError(res, err)) return;
 
 					if (!user) {
 						res.flash.message('error', 'The user for that recovery code has expired.');
@@ -66,11 +54,7 @@ module.exports = function(express, data, page) {
 
 					user.password = sha256(user.username + pass1);
 					users.update(user, function(err) {
-						if (err) {
-							res.flash.message('error', err.message);
-							res.redirect(data.pages.error_server.path);
-							return;
-						}
+						if (data.fnHandleError(res, err)) return;
 
 						res.flash.username = user.name;
 						res.flash.message('success', 'The password has been successfully updated.');

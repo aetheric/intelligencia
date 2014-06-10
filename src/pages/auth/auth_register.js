@@ -18,20 +18,12 @@ module.exports = function(express, data, page) {
 		//TODO: validate
 
 		data.fnMongo(function(err, db) {
-			if (err) {
-				res.flash.message('error', err.message);
-				res.redirect(data.pages.error_server.path);
-				return;
-			}
+			if (data.fnHandleError(res, err)) return;
 
 			var users = db.collection('users');
 
 			users.find({ email: req.body.email }).nextObject(function(err, item) {
-				if (err) {
-					res.flash.message('error', err.message);
-					res.redirect(data.pages.error_server.path);
-					return;
-				}
+				if (data.fnHandleError(res, err)) return;
 
 				if (item) {
 					res.flash.username = req.body.username;
@@ -47,11 +39,7 @@ module.exports = function(express, data, page) {
 					password: data.fnEncryptPass(req.body.password1),
 					email: req.body.email
 				}, { safe: true }, function(err, item) {
-					if (err) {
-						res.flash.message('error', err.message);
-						res.redirect(data.pages.error_server.path);
-						return;
-					}
+					if (data.fnHandleError(res, err)) return;
 
 					res.flash.username = item[0].username;
 					res.flash.message('success', 'You have successfully registered. Please wait for verification.');

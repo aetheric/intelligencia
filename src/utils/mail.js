@@ -20,13 +20,12 @@ module.exports = function(data) {
 
 	data.fnMail = function(options, callback) {
 		data.fnMongo(function(err, db) {
-			if (err) throw err;
+			if (data.fnHandleError(res, err)) return callback(false);
 
 			db.collection('mail').find({ name: options.template }).nextObject(function(err, template) {
-				if (err) {
-					console.error(error);
-					return callback(false);
-				} else if (!template) {
+				if (data.fnHandleError(res, err)) return callback(false);
+
+				if (!template) {
 					console.warn('Mail template not found!');
 					return callback(false);
 				}
@@ -39,7 +38,7 @@ module.exports = function(data) {
 						text: renderPlain(template.content, options.context)
 					});
 				} catch (error) {
-					console.error(error);
+					data.fnHandleError(res, error);
 					return callback(false);
 				}
 

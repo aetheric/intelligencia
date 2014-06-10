@@ -4,20 +4,10 @@ module.exports = function(express, data, page) {
 		var docId = data.fnMongoId(req.params.docId);
 
 		data.fnMongo(function(err, db) {
-			if (err) {
-				res.flash.message('error', err.message);
-				res.redirect(data.pages.error_server.path);
-				return;
-			}
+			if (data.fnHandleError(res, err)) return;
 
 			db.collection('docs').find({ _id: docId }).nextObject(function(err, doc) {
-				if (err) {
-					res.render(data.pages.error_server.template, {
-						title: 'Error Reading Document'
-					});
-
-					return;
-				}
+				if (data.fnHandleError(res, err)) return;
 
 				res.render(page.template, {
 					title: 'Document View',

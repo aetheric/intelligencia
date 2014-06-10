@@ -2,7 +2,9 @@ module.exports = function(express, data, page) {
 	var _ = require('underscore');
 
 	express.get(page.path, function(req, res) {
-		if (!req.session.user) {
+		var user = req.session.user;
+
+		if (!user) {
 			res.redirect(data.pages.auth_login.path);
 			return;
 		}
