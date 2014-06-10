@@ -33,7 +33,7 @@ module.exports = function(data) {
 				try {
 					_.defaults(mailOptions, {
 						from: 'Intelligencia <intelligencia@aetheric.co.nz>',
-						html: asciidoc.$render(template.content, options.context),
+//						html: asciidoc.$render(template.content, options.context),
 						text: renderPlain(template.content, options.context)
 					});
 				} catch (error) {
