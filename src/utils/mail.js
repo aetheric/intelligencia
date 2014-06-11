@@ -11,11 +11,20 @@ module.exports = function(data) {
 		}
 	});
 
+	// Will match the following text:
+	// link:http://keepass.info/[Keepass] http://keepass.info[Keepass]
+	var regexAdocLink = /(?:link:)?(\S+?)\[(.+?)\]/g;
+
 	function renderPlain(template, context) {
-		return _.inject(context, function(text, value, key) {
-			var pattern = new RegExp('{' + key + '}', 'g');
+		var result = _.inject(context, function(text, value, key) {
+			var pattern = new RegExp('\\{' + key + '\\}', 'g');
 			return text.replace(pattern, value);
 		}, template);
+
+		// Manual asciidoc intervention.
+		result = result.replace(regexAdocLink, '$2 ($1)');
+
+		return result;
 	}
 
 	data.fnMail = function(options, callback) {
