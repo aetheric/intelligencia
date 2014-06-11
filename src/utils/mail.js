@@ -50,7 +50,6 @@ module.exports = function(data) {
 				}
 
 				transport.sendMail(mailOptions, callback);
-				return callback();
 			});
 		});
 	};
