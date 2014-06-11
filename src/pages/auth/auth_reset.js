@@ -5,8 +5,8 @@ module.exports = function(express, data, page) {
 	express.get(page.path, function(req, res) {
 		res.render(page.template, {
 			title: 'Password Reset',
-			code: req.param.code || req.flash.code,
-			email: req.param.email || req.flash.email
+			code: req.query.code || req.flash.code,
+			email: req.query.email || req.flash.email
 		});
 	});
 

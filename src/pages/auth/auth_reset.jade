@@ -4,7 +4,7 @@ block content
 
 	.row: .col-md-4.col-md-offset-4.col-sm-6.col-sm-offset-3
 		.page-header
-			h1 Password Recovery
+			h1 Password Reset
 
 	.row: .col-md-4.col-md-offset-4.col-sm-6.col-sm-offset-3
 		form(role='form', method='post')
@@ -17,7 +17,7 @@ block content
 					name='email',
 					placeholder='email@somewhere.com',
 					value=email,
-					autofocus=true,
+					autofocus=( !email ),
 					required=true
 				)
 
@@ -29,7 +29,7 @@ block content
 					name='code',
 					placeholder='pumpernickle',
 					value=code,
-					autofocus=email,
+					autofocus=( email && !code ),
 					required=true
 				)
 
@@ -39,7 +39,7 @@ block content
 				input#password1.form-control(
 					type='password',
 					name='password1',
-					autofocus=email&&code,
+					autofocus=( email && code ),
 					required=true
 				)
 

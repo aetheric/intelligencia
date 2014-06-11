@@ -24,14 +24,15 @@ mixin navlink(pagetitle, path)
 					if auth.isAdmin
 						+navlink('User List', '/app/user/list')
 					+navlink('User Dashboard', '/app/user/dash')
+				else
+					+navlink('Register', '/auth/register')
+					+navlink('Recover', '/auth/recover')
+					+navlink('Reset', '/auth/reset')
 
 				block extranav
 
 			ul.nav.navbar-nav.navbar-right
 				if auth.isValid
 					+navlink('Sign-out', '/auth/logout')
-				else if req.url.match('^/auth/login')
-					+navlink('Register', '/auth/register')
-					+navlink('Recover', '/auth/recover')
 				else
 					+navlink('Sign-in', '/auth/login')
