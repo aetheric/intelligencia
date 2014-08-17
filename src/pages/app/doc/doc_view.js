@@ -9,10 +9,12 @@ module.exports = function(express, data, page) {
 			db.collection('docs').find({ _id: docId }).nextObject(function(err, doc) {
 				if (data.fnHandleError(res, err)) return;
 
+				// TODO: Handle missing document.
+
 				res.render(page.template, {
 					title: 'Document View',
 					doc: doc,
-					content: data.fnRedact(docJson, req.subject)
+					content: data.fnRedact(doc.content, req.subject)
 				});
 			});
 		});
