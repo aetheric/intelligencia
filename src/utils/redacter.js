@@ -2,6 +2,7 @@ module.exports = function() {
 	var _ = require('underscore');
 
 	var regex_newline = /(?:\r\n)|(?:\r)|(?:\n)/g;
+	var regex_restrict = /\[restrict ([\w:])+?\](.+?)\[\/restrict\]/g;
 	var redaction_char = '\u2588';
 	var match_restrict_start = '[restrict ';
 	var match_restrict_end = '[/restrict]';
