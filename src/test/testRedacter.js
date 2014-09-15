@@ -38,31 +38,22 @@ describe('fnRedact(document, subject)', function() {
 	});
 
 	describe('dealing with complex blocks', function() {
-		var input = 'This is a section of text [restrict test:alpha] that has a secure block  [/restrict] in it.';
+		var input_begin = 'This is a section of text ';
+		var input_middle = '[restrict test:alpha] that has a secure block  [/restrict]';
+		var input_end = ' in it.';
+		var input = input_begin + input_middle + input_end;
 
-		it('should strip out whitespace around visible secure blocks', function() {
-			var expectedOutput = 'This is a section of text that has a secure block in it.';
+		it('should leave unrestricted content alone', function() {
 			var redacted = redact(input, mockSubject(true));
-			expect(redacted).to.equal(expectedOutput);
+			expect(redacted).to.equal(input_begin
+				+ '[restrict test:alpha] that has a secure block&nbsp;&nbsp;[/restrict]' + input_end);
 		});
 
-		it ('should strip out whitespace around redacted secure blocks', function() {
-			var expectedOutput = 'This is a section of text ███████████████████████ in it.';
+		it ('should redact content of restricted blocks', function() {
+			var expectedOutput = input_begin + redactedContent(input_middle.length) + input_end;
 			var redacted = redact(input, mockSubject(false));
 			expect(redacted).to.equal(expectedOutput);
 		})
-
-	});
-
-	describe('with file input and output', function() {
-		var fileReadOptions = { encoding: 'utf-8' };
-		var complexInput = fs.readFileSync('./testRedacterInput.txt', fileReadOptions);
-
-		it('should redact forbidden sections', function() {
-			var complexOutput = fs.readFileSync('./testRedacterOutput.txt', fileReadOptions);
-			var redacted = redact(complexInput, mockSubject('test:alpha'));
-			expect(redacted).to.equal(complexOutput)
-		});
 
 	});
 
@@ -98,4 +89,12 @@ function mockSubject(isPermitted) {
 		}
 
 	};
+}
+
+function redactedContent(num) {
+	var output = '';
+	for (var i = 0; i < num; i++) {
+		output += '█';
+	}
+	return output;
 }
