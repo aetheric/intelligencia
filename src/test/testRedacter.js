@@ -52,7 +52,7 @@ describe('fnRedact(document, subject)', function() {
 			var expectedOutput = input_begin + redactedContent(input_middle.length) + input_end;
 			var redacted = redact(input, mockSubject(false));
 			expect(redacted).to.equal(expectedOutput);
-		})
+		});
 
 	});
 
