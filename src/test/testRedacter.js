@@ -1,5 +1,4 @@
 var expect = require('chai').expect;
-var fs = require('fs');
 var _ = require('underscore');
 
 // Required to get access to String.format

@@ -3,12 +3,24 @@ module.exports = function() {
 	var client = mongo.MongoClient;
 	var format = require('format');
 
+	var connection_url;
 	var connection;
+
+	function getConnection() {
+		if (!connection) {
+			client.connect(connection_url, function(err, db) {
+				if (err) throw err;
+				connection = db;
+			});
+		}
+
+		return connection;
+	}
 
 	return {
 
 		init: function(config) {
-			connection = format('mongodb://%s:%s@%s:%d/%s',
+			connection_url = format('mongodb://%s:%s@%s:%d/%s',
 				config.user || 'mongo',
 				config.pass || 'mongo',
 				config.host || 'localhost',
@@ -17,12 +29,14 @@ module.exports = function() {
 			);
 		},
 
-		getDocumentDetail: function(docId, callback) {
-			client.connect(connection, function(err, db) {
-				if (err) return callback(err);
+		close: function() {
+			if (connection) {
+				connection.close();
+			}
+		},
 
-				db.collection('docs').find({ _id: docId }).nextObject(callback);
-			});
+		getDocumentDetail: function(docId, callback) {
+			getConnection().collection('docs').find({ _id: docId }).nextObject(callback);
 		}
 
 	};
