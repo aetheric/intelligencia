@@ -27,7 +27,7 @@ module.exports = function(data) {
 		return result;
 	}
 
-	data.fnMail = function(options, callback) {
+	return function(options, callback) {
 		data.fnMongo(function(err, db) {
 			if (err) return callback(err);
 
@@ -54,4 +54,4 @@ module.exports = function(data) {
 		});
 	};
 
-};
+}();
