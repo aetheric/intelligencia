@@ -31,6 +31,7 @@ describe('the data service', function() {
 		it('should be a function', function() {
 			expect(data).to.have.property('init');
 			expect(data.init).to.be.a('function');
+			expect(data.init()).to.be.a('Promise');
 		});
 
 		it('should connect to the database', function() {
@@ -45,6 +46,7 @@ describe('the data service', function() {
 		it('should be a function', function() {
 			expect(data).to.have.property('close');
 			expect(data.close).to.be.a('function');
+			expect(data.close()).to.be.a('Promise');
 		});
 
 		it('should close the current connection', function() {
@@ -59,6 +61,13 @@ describe('the data service', function() {
 		it('should be a function', function() {
 			expect(data).to.have.property('getDocumentDetail');
 			expect(data.getDocumentDetail).to.be.a('function');
+			expect(data.getDocumentDetail(0)).to.be.a('Promise');
+		});
+
+		it('should access the document collection', function() {
+			data.getDocumentDetail(0).then(function(document, error) {
+				sinon.assert.calledOnceWith(client.db.collection, 'docs');
+			});
 		});
 
 	});
