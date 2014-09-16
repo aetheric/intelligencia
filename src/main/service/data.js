@@ -50,13 +50,34 @@ module.exports = function() {
 		getDocumentDetail: function(docId) {
 			return new Promise(function(resolve, reject) {
 				if (!docId) return reject('Document id is not valid');
+				if (!connection) return reject('No connection has been established');
+
 				try {
 					connection
 						.collection('docs')
 						.find({
 							_id: mongoId(docId)
 						}).nextObject(function (error, document) {
-							return err ? reject(error) : resolve(document);
+							return error ? reject(error) : resolve(document);
+						});
+				} catch (error) {
+					reject(error);
+				}
+			});
+		},
+
+		getMailTemplateByName: function(templateName) {
+			return new Promise(function(resolve, reject) {
+				if (!templateName) return reject('Template name is not valid');
+				if (!connection) return reject('No connection has been established');
+
+				try {
+					connection
+						.collection('mail')
+						.find({
+							name: templateName
+						}).nextObject(function(error, mailTemplate) {
+							return error ? reject(error) : resolve(mailTemplate);
 						});
 				} catch (error) {
 					reject(error);

@@ -1,15 +1,9 @@
-module.exports = function(data) {
+module.exports = function() {
 	var _ = require('underscore');
 	var mail = require('nodemailer');
 	var asciidoc = require('asciidoctorjs-npm-wrapper').Asciidoctor;
 
-	var transport = mail.createTransport('gmail', {
-		debug: data.env.current === 'development',
-		auth: {
-			user: data.env.mail.user,
-			pass: data.env.mail.pass
-		}
-	});
+	var transport;
 
 	// Will match the following text:
 	// link:http://keepass.info/[Keepass] http://keepass.info[Keepass]
@@ -27,31 +21,45 @@ module.exports = function(data) {
 		return result;
 	}
 
-	return function(options, callback) {
-		data.fnMongo(function(err, db) {
-			if (err) return callback(err);
+	return {
 
-			db.collection('mail').find({ name: options.template }).nextObject(function(err, template) {
-				if (err) return callback(err);
+		init: function(config) {
+			return new Promise(function(resolve, reject) {
+				if (!config) return reject('Config not provided');
 
-				if (!template) {
-					return callback(new Error('Mail template not found'));
-				}
+				transport = mail.createTransport('gmail', {
+					debug: data.env.current === 'development',
+					auth: {
+						user: data.env.mail.user,
+						pass: data.env.mail.pass
+					}
+				});
 
-				var mailOptions = options;
-				try {
-					_.defaults(mailOptions, {
-						from: 'Intelligencia <intelligencia@aetheric.co.nz>',
-//						html: asciidoc.$render(template.content, options.context),
-						text: renderPlain(template.content, options.context)
-					});
-				} catch (error) {
-					return callback(error);
-				}
-
-				transport.sendMail(mailOptions, callback);
+				resolve();
 			});
-		});
+		},
+
+		send: function(options) {
+			return new Promise(function(resolve, reject) {
+				data.getMailTemplateByName(options.template).then(function(template) {
+					if (!template) return reject(new Error('Mail template not found'));
+
+					var mailOptions = options;
+					try {
+						_.defaults(mailOptions, {
+							from: 'Intelligencia <intelligencia@aetheric.co.nz>',
+//							html: asciidoc.$render(template.content, options.context),
+							text: renderPlain(template.content, options.context)
+						});
+					} catch (error) {
+						return callback(error);
+					}
+
+					transport.sendMail(mailOptions, callback);
+				});
+			});
+		}
+
 	};
 
 }();
