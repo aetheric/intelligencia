@@ -2,6 +2,7 @@ module.exports = function() {
 	var mongo = require('mongodb');
 	var client = mongo.MongoClient;
 	var format = require('format');
+	var Promise = require('promise');
 
 	var connection;
 

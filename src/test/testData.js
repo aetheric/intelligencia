@@ -31,7 +31,7 @@ describe('the data service', function() {
 		it('should be a function', function() {
 			expect(data).to.have.property('init');
 			expect(data.init).to.be.a('function');
-			expect(data.init()).to.be.a('Promise');
+			expect(data.init()).to.be.a(Promise);
 		});
 
 		it('should connect to the database', function() {
