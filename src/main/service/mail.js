@@ -2,6 +2,7 @@ module.exports = function() {
 	var _ = require('underscore');
 	var mail = require('nodemailer');
 	var asciidoc = require('asciidoctorjs-npm-wrapper').Asciidoctor;
+	//TODO: Get Asciidoctor rendering of email templates working.
 
 	var transport;
 
@@ -23,27 +24,41 @@ module.exports = function() {
 
 	return {
 
+		/**
+		 * Initialises the mail transport engine. Requires a username, password, and optional debug mode flag.
+		 * @param {Object} config A map containing 'username' and 'password' information for the gmail sender account.
+		 * @returns {Promise} Will resolve with no arguments if successful, otherwise will reject with error.
+		 */
 		init: function(config) {
 			return new Promise(function(resolve, reject) {
-				if (!config) return reject('Config not provided');
+				if (!config) {
+					return reject(new Error('Config not provided'));
+				}
 
-				transport = mail.createTransport('gmail', {
-					debug: data.env.current === 'development',
-					auth: {
-						user: data.env.mail.user,
-						pass: data.env.mail.pass
-					}
-				});
+				try {
+					transport = mail.createTransport('gmail', {
+						debug: config.debug || false,
+						auth: {
+							user: config.username,
+							pass: config.password
+						}
+					});
+				} catch (error) {
+					return reject(error);
+				}
 
-				resolve();
+				return resolve();
 			});
 		},
 
 		send: function(options) {
 			return new Promise(function(resolve, reject) {
 				data.getMailTemplateByName(options.template).then(function(template) {
-					if (!template) return reject(new Error('Mail template not found'));
+					if (!template) {
+						return reject(new Error('Mail template not found'));
+					}
 
+					//TODO: This seems like it could be simpified. Consult underscore api.
 					var mailOptions = options;
 					try {
 						_.defaults(mailOptions, {
@@ -51,11 +66,15 @@ module.exports = function() {
 //							html: asciidoc.$render(template.content, options.context),
 							text: renderPlain(template.content, options.context)
 						});
-					} catch (error) {
-						return callback(error);
-					}
 
-					transport.sendMail(mailOptions, callback);
+						transport.sendMail(mailOptions, function() {
+							//TODO: May need an error check here. Consult mail api.
+							resolve();
+						});
+
+					} catch (error) {
+						return reject(error);
+					}
 				});
 			});
 		}
