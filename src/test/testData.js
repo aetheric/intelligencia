@@ -8,14 +8,9 @@ describe('the data service', function() {
 	var client;
 
 	beforeEach(function() {
-		data = proxyquire('../utils/data', {
+		data = proxyquire('../main/service/data', {
 			mongo: {
-				client: client = {
-					connect: sinon.spy(),
-					open: sinon.spy(),
-					close: sinon.spy(),
-					db: sinon.spy()
-				}
+				client: client = {}
 			}
 		});
 	});
@@ -28,10 +23,14 @@ describe('the data service', function() {
 
 	describe('an init method', function() {
 
+		beforeEach(function() {
+			client.connect = sinon.spy();
+		});
+
 		it('should be a function', function() {
 			expect(data).to.have.property('init');
 			expect(data.init).to.be.a('function');
-			expect(data.init()).to.be.a(Promise);
+			expect(data.init({})).to.be.a('Promise');
 		});
 
 		it('should connect to the database', function() {

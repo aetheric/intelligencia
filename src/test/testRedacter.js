@@ -5,7 +5,7 @@ var _ = require('underscore');
 require('../utils/utils')({});
 
 describe('fnRedact(document, subject)', function() {
-	var redact = require('../utils/redacter');
+	var redact = require('../main/service/redacter');
 
 	it('should leave a regular string of text alone', function() {
 		var inputText = 'This is a string of normal input text with no fancy crap.';

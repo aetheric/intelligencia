@@ -3,8 +3,8 @@ module.exports = function(data) {
 	var Express = require('express');
 	var express = Express();
 
-	var i18n = require('./utils/i18n');
-	var flash = require('./utils/flash');
+	var i18n = require('./main/middleware/i18n');
+	var flash = require('./main/middleware/flash');
 
 	// configure the express server
 	express.configure(function() {

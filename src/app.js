@@ -53,8 +53,8 @@ _.extend(data.env, {
 	prod: data.env.current === 'production'
 });
 
-data.fnRedact = require('./utils/redacter');
-data.fnMail = require('./utils/mail');
+data.fnRedact = require('./main/service/redacter');
+data.fnMail = require('./main/service/mail');
 
 require('./utils/pagescan')(data);
 
@@ -65,7 +65,7 @@ require('./utils/mongo')(data);
 var express = require('./express')(data);
 
 // Configure security and routing.
-require('./utils/security')(express, data);
+require('./main/middleware/security')(express, data);
 require('./routing')(express, data);
 
 // Start the server
