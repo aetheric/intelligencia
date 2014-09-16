@@ -18,6 +18,10 @@ module.exports = function() {
 	}
 
 	function mask(length) {
+		if (_.isString(length)) {
+			return mask(length.length);
+		}
+
 		var output = '';
 
 		for (var i = 0; i < length; i++) {
