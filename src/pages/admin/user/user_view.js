@@ -1,21 +1,15 @@
 module.exports = function(express, data, page) {
+	var dataService = require('../../../main/service/data');
 
 	express.get(page.path + '/:userId', function(req, res) {
-		var userId = data.fnMongoId(req.params.userId);
-
-		data.fnMongo(function(err, db) {
-			if (data.fnHandleError(res, err)) return;
-
-			db.collection('users').find({ _id: userId }).nextObject(function(err, user) {
-				if (data.fnHandleError(res, err)) return;
-
-				//TODO: Handle missing user.
-
-				res.render(page.template, {
-					title: 'User Detail',
-					user: user
-				});
+		dataService.getUserById(req.params.userId).then(function(user) {
+			res.render(page.template, {
+				title: 'User Detail',
+				user: user
 			});
+		}).catch(function(error) {
+			res.flash.message('error', error);
+			res.redirect(data.pages.error.server.path);
 		});
 	});
 

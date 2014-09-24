@@ -1,5 +1,6 @@
 module.exports = function() {
 	var _ = require('underscore');
+	var Promise = require('promise');
 
 	var regex_newline = /(?:\r\n)|(?:\r)|(?:\n)/g;
 	var regex_restrict = /\[restrict ([\w:]+?)\]([\s\S]+?)\[\/restrict\]/g;
@@ -31,33 +32,37 @@ module.exports = function() {
 		return output;
 	}
 
-	return function(document, subject) {
-		if (!document || !subject) {
-			return null;
-		}
+	return {
 
-		// Manual line-breaks
-		var redacted = document;
-		var groups;
+		redact: function (document, predicate) {
+			return new Promise(function(resolve, reject) {
+				if (!document) return reject(new Error('Document is missing'));
+				if (!predicate) return reject(new Error('Predicate is missing'));
+				if (!_.isFunction(predicate)) {
+					return reject(new Error('Predicate is not a function.'));
+				}
 
-		while ( groups = regex_restrict.exec(redacted) ) {
-			var requiredRoles = groups[1].split(',');
+				var redacted = document;
+				var groups;
 
-			var restricted = _.reduce(requiredRoles, function(restricted, requiredRole) {
-				return restricted || subject.isPermitted(requiredRole, function(err, permitted) {
-					if (err || !permitted) {
-						return true;
+				while (groups = regex_restrict.exec(redacted)) {
+					var requiredRoles = groups[1].split(',');
+
+					var restricted = _.reduce(requiredRoles, function (restricted, requiredRole) {
+						return restricted || predicate(requiredRole);
+					}, false);
+
+					if (restricted) {
+						var content_full = groups[0];
+						redacted = redacted.replace(content_full, mask(content_full.length));
 					}
-				});
-			}, false);
 
-			if (restricted) {
-				var content_full = groups[0];
-				redacted = redacted.replace(content_full, mask(content_full.length));
-			}
+				}
 
+				return resolve(lockWhitespace(redacted));
+
+			});
 		}
 
-		return lockWhitespace(redacted);
 	}
 }();

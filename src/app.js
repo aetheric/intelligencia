@@ -53,13 +53,8 @@ _.extend(data.env, {
 	prod: data.env.current === 'production'
 });
 
-data.fnRedact = require('./main/service/redacter');
-data.fnMail = require('./main/service/mail');
-
 require('./utils/pagescan')(data);
-
 require('./utils/utils')(data);
-require('./utils/mongo')(data);
 
 // init and set up express.
 var express = require('./express')(data);

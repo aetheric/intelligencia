@@ -1,6 +1,9 @@
 module.exports = function(express, data, page) {
 	var _ = require('underscore');
 
+	var dataService = require('../../main/service/data');
+	var mailService = require('../../main/service/mail');
+
 	express.get(page.path, function(req, res) {
 		res.render(page.template, {
 			title: 'Recover Password',
@@ -17,61 +20,54 @@ module.exports = function(express, data, page) {
 			return;
 		}
 
-		data.fnMongo(function(err, db) {
-			if (data.fnHandleError(res, err)) return;
+		dataService.getUserByEmail(email).catch(handleError(res)).then(function(user) {
 
-			db.collection('users').find({ email: email }).nextObject(function(err, user) {
-				if (data.fnHandleError(res, err)) return;
+			if (!user) {
+				res.flash.email = email;
+				res.flash.message('error', 'No user could be found with that email address.');
+				res.redirect(page.path);
+				return;
+			}
 
-				if (!user) {
-					res.flash.email = email;
-					res.flash.message('error', 'No user could be found with that email address.');
-					res.redirect(page.path);
+			var code = 'pumpernickle';
+
+			dataService.addRecovery(user._id, email, code).catch(handleError(res)).then(function(recovery) {
+				var email = recovery[0].email;
+				var code = recovery[0].code;
+
+				var details = '[ email: {}, code: {} ]'.format(email, code);
+
+				if (!email || !code) {
+					var error = new Error('Recovery details are missing: {}.'.format(details));
+					data.fnHandleError(res, error);
 					return;
 				}
 
-				var code = 'pumpernickle';
+				console.log('Attempting to send password recovery email: {}.'.format(details));
 
-				db.collection('recovery').insert({
-					userId: user._id,
-					email: email,
-					code: code
-				}, function(err, recovery) {
-					if (data.fnHandleError(res, err)) return;
-
-					var email = recovery[0].email;
-					var code = recovery[0].code;
-
-					var details = '[ email: {}, code: {} ]'.format(email, code);
-
-					if (!email || !code) {
-						var error = new Error('Recovery details are missing: {}.'.format(details));
-						data.fnHandleError(res, error);
-						return;
+				mailService.send({
+					to: email,
+					subject: 'Password Recovery',
+					template: 'password_recovery',
+					context: {
+						email: email,
+						code: code
 					}
-
-					console.log('Attempting to send password recovery email: {}.'.format(details));
-
-					data.fnMail({
-						to: email,
-						subject: 'Password Recovery',
-						template: 'password_recovery',
-						context: {
-							email: email,
-							code: code
-						}
-					}, function(err) {
-						if (data.fnHandleError(res, err)) return;
-
-						res.flash.message('success', 'Recovery email sent to provided address.');
-						res.redirect(data.pages.auth_login.path);
-					});
-
+				}).catch(handleError(res)).then(function() {
+					res.flash.message('success', 'Recovery email sent to provided address.');
+					res.redirect(data.pages.auth_login.path);
 				});
 
 			});
+
 		});
 
 	});
+
+	function handleError(response) {
+		return function(error) {
+			data.fnHandleError(response, error);
+		}
+	}
 
 };

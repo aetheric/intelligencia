@@ -1,17 +1,15 @@
 module.exports = function(express, data, page) {
+	var dataService = require('../../../main/service/data');
 
 	express.get(page.path, function(req, res) {
-		data.fnMongo(function(err, db) {
-			if (data.fnHandleError(res, err)) return;
-
-			db.collection('docs').find().toArray(function(err, items) {
-				if (data.fnHandleError(res, err)) return;
-
-				res.render(page.template, {
-					title: 'User List',
-					users: items
-				});
+		dataService.getUserList().then(function(users) {
+			res.render(page.template, {
+				title: 'User List',
+				users: users
 			});
+		}).catch(function(error) {
+			res.flash.message('error', error);
+			res.redirect(data.pages.error.server.path);
 		});
 	});
 

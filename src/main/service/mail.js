@@ -31,9 +31,7 @@ module.exports = function() {
 		 */
 		init: function(config) {
 			return new Promise(function(resolve, reject) {
-				if (!config) {
-					return reject(new Error('Config not provided'));
-				}
+				if (!config) return reject('Config not provided');
 
 				try {
 					transport = mail.createTransport('gmail', {
@@ -51,27 +49,26 @@ module.exports = function() {
 			});
 		},
 
+		/**
+		 * Sends an email based on a stored template to an address with a subject. Supports plain text and asciidoc.
+		 * @param {Object} options a map containing 'to', 'subject', 'template' and rendering 'context' information.
+		 * @returns {Promise} Will resolve with no arguments if successful, otherwise will reject with error.
+		 */
 		send: function(options) {
 			return new Promise(function(resolve, reject) {
 				data.getMailTemplateByName(options.template).then(function(template) {
-					if (!template) {
-						return reject(new Error('Mail template not found'));
-					}
+					if (!template) return reject('Mail template not found');
 
-					//TODO: This seems like it could be simpified. Consult underscore api.
-					var mailOptions = options;
 					try {
-						_.defaults(mailOptions, {
+						transport.sendMail(_.defaults(options, {
 							from: 'Intelligencia <intelligencia@aetheric.co.nz>',
 //							html: asciidoc.$render(template.content, options.context),
 							text: renderPlain(template.content, options.context)
+						}), function(error, info) {
+							error
+								? reject(error)
+								: resolve(info);
 						});
-
-						transport.sendMail(mailOptions, function() {
-							//TODO: May need an error check here. Consult mail api.
-							resolve();
-						});
-
 					} catch (error) {
 						return reject(error);
 					}

@@ -4,13 +4,32 @@ module.exports = function() {
 	var format = require('format');
 	var Promise = require('promise');
 
+	var COLLECTION_USERS = 'users';
+	var COLLECTION_DOCS = 'docs';
+	var COLLECTION_MAIL = 'mail';
+	var COLLECTION_RECOVERY = 'recovery';
+
 	var connection;
 
 	function mongoId(objectId) {
 		return new mongo.ObjectID(objectId);
 	}
 
-	return {
+	function callback(resolve, reject) {
+		return function(error, data) {
+			return error
+				? reject(error)
+				: resolve(data);
+		}
+	}
+
+	function singleton(key, value) {
+		var singleton = {};
+		singleton[key] = value;
+		return singleton;
+	}
+
+	var service = {
 
 		init: function(config) {
 			return new Promise(function(resolve, reject) {
@@ -54,12 +73,93 @@ module.exports = function() {
 
 				try {
 					connection
-						.collection('docs')
-						.find({
-							_id: mongoId(docId)
-						}).nextObject(function (error, document) {
-							return error ? reject(error) : resolve(document);
-						});
+						.collection(COLLECTION_DOCS)
+						.find(singleton('_id', mongoId(docId)))
+						.nextObject(callback(resolve, reject));
+				} catch (error) {
+					return reject(error);
+				}
+			});
+		},
+
+		getUserList: function() {
+			return new Promise(function(resolve, reject) {
+				if (!connection) return reject('No connection has been established');
+
+				try {
+					connection
+						.collection(COLLECTION_USERS)
+						.find()
+						.toArray(callback(resolve, reject));
+				} catch (error) {
+					return reject(error);
+				}
+			});
+		},
+
+		getUserById: function(userId) {
+			if (!userId) return Promise.reject('No user id has been provided!');
+			return service.getUser(singleton('_id', mongoId(userId)));
+		},
+
+		getUserByUsername: function(username) {
+			if (!username) return Promise.reject('No username has been provided!');
+			return service.getUser(singleton('username', username));
+		},
+
+		getUserByEmail: function(email) {
+			if (!email) return Promise.reject('No email has been provided!');
+			return service.getUser(singleton('email', email));
+		},
+
+		getUser: function(criteria) {
+			return new Promise(function(resolve, reject) {
+				if (!criteria) return reject('No search criteria provided!');
+				if (!connection) return reject('No connection has been established!');
+
+				try {
+					connection
+						.collection(COLLECTION_USERS)
+						.find(criteria)
+						.nextObject(callback(resolve, reject));
+				} catch (error) {
+					reject(error);
+				}
+			});
+		},
+
+		addRecovery: function(userId, email, code) {
+			return new Promise(function(resolve, reject) {
+				if (!userId) return reject('No user id has been provided');
+				if (!email) return reject('No email address has been provided');
+				if (!code) return reject('No recovery code has been provided.');
+				if (!connection) return reject('No connection has been established!');
+
+				var item = {
+					userId: userId,
+					email: email,
+					code: code
+				};
+
+				try {
+					connection
+						.collection(COLLECTION_RECOVERY)
+						.insert(item, callback(resolve, reject));
+				} catch (error) {
+					reject(error);
+				}
+			});
+		},
+
+		getRecoveryList: function() {
+			return new Promise(function(resolve, reject) {
+				if (!connection) return reject('No connection has been established!');
+
+				try {
+					connection
+						.collection(COLLECTION_RECOVERY)
+						.find()
+						.toArray(callback(resolve, reject));
 				} catch (error) {
 					reject(error);
 				}
@@ -73,12 +173,9 @@ module.exports = function() {
 
 				try {
 					connection
-						.collection('mail')
-						.find({
-							name: templateName
-						}).nextObject(function(error, mailTemplate) {
-							return error ? reject(error) : resolve(mailTemplate);
-						});
+						.collection(COLLECTION_MAIL)
+						.find(singleton('name', templateName))
+						.nextObject(callback(resolve, reject));
 				} catch (error) {
 					reject(error);
 				}
@@ -86,5 +183,7 @@ module.exports = function() {
 		}
 
 	};
+
+	return service;
 
 }();

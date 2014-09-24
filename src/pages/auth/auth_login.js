@@ -2,6 +2,8 @@ module.exports = function(express, data, page) {
 	var sha256 = require('crypto-js/sha256');
 	var _ = require('underscore');
 
+	var dataService = require('../../main/service/data');
+
 	var defaultRedirect = data.pages.app_doc_list.path;
 	function getRedirect(req) {
 		return req.flash.redirect || defaultRedirect;
@@ -38,23 +40,21 @@ module.exports = function(express, data, page) {
 			return;
 		}
 
-		data.fnMongo(function(err, db) {
-			if (data.fnHandleError(res, err)) return;
+		dataService.getUserByUsername(username).then(function(user) {
 
-			db.collection('users').find({ username: username }).nextObject(function(err, user) {
-				if (data.fnHandleError(res, err)) return;
+			var hash = sha256(username + password);
+			if (!user || user.password !== hash) {
+				res.flash.username = username;
+				res.flash.message('error', 'No user exists with that name and password.');
+				res.redirect(page.path);
+				return;
+			}
 
-				var hash = sha256(username + password);
-				if (!user || user.password !== hash) {
-					res.flash.username = username;
-					res.flash.message('error', 'No user exists with that name and password.');
-					res.redirect(page.path);
-					return;
-				}
+			req.session.user = user;
+			res.redirect(getRedirect(req));
 
-				req.session.user = user;
-				res.redirect(getRedirect(req));
-			});
+		}).catch(function(error) {
+			data.fnHandleError(res, error);
 		});
 
 	});
