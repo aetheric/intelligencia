@@ -1,4 +1,7 @@
 module.exports = function(express, data, page) {
+	var _ = require('underscore');
+
+	var dataService = require('../../main/service/data');
 
 	express.get(page.path, function(req, res) {
 		if (req.session.user) {
@@ -15,38 +18,33 @@ module.exports = function(express, data, page) {
 	});
 
 	express.post(page.path, function(req, res) {
+
+		var username = req.body.username;
+		var password = data.fnEncryptPass(req.body.password1);
+		var email = req.body.email;
+
 		//TODO: validate
 
-		data.fnMongo(function(err, db) {
-			if (data.fnHandleError(res, err)) return;
+		var catcher = _.partial(data.fnHandleError, res);
 
-			var users = db.collection('users');
+		dataService.getUserByEmail(email).then(function(user) {
 
-			users.find({ email: req.body.email }).nextObject(function(err, item) {
-				if (data.fnHandleError(res, err)) return;
+			if (user) {
+				res.flash.username = req.body.username;
+				res.flash.email = req.body.email;
+				res.flash.message('error', 'That user already exists!');
 
-				if (item) {
-					res.flash.username = req.body.username;
-					res.flash.email = req.body.email;
-					res.flash.message('error', 'That user already exists!');
+				res.redirect(page.path);
+				return;
+			}
 
-					res.redirect(page.path);
-					return;
-				}
+			dataService.addUser(username, password, email).then(function() {
+				res.flash.username = username;
+				res.flash.message('success', 'You have successfully registered. Please wait for verification.');
+				res.redirect(data.pages.auth_login.path);
+			}).catch(catcher);
+		}).catch(catcher);
 
-				users.insert({
-					username: req.body.username,
-					password: data.fnEncryptPass(req.body.password1),
-					email: req.body.email
-				}, { safe: true }, function(err, item) {
-					if (data.fnHandleError(res, err)) return;
-
-					res.flash.username = item[0].username;
-					res.flash.message('success', 'You have successfully registered. Please wait for verification.');
-					res.redirect(data.pages.auth_login.path);
-				});
-			});
-		});
 	});
 
 };

@@ -128,6 +128,29 @@ module.exports = function() {
 			});
 		},
 
+		addUser: function(username, password, email) {
+			return new Promise(function(resolve, reject) {
+				if (!username) return reject('No username has been provided');
+				if (!password) return reject('No password has been provided');
+				if (!email) return reject('No email address has been provided');
+				if (!connection) return reject('No connection has been established!');
+
+				var item = {
+					username: username,
+					password: password,
+					email: email
+				};
+
+				try {
+					connection
+						.collection(COLLECTION_USERS)
+						.insert(item, callback(resolve, reject));
+				} catch (error) {
+					reject(error);
+				}
+			});
+		},
+
 		addRecovery: function(userId, email, code) {
 			return new Promise(function(resolve, reject) {
 				if (!userId) return reject('No user id has been provided');
