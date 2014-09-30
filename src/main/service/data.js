@@ -141,10 +141,14 @@ module.exports = function() {
 					email: email
 				};
 
+				var options = {
+					safe: true
+				};
+
 				try {
 					connection
 						.collection(COLLECTION_USERS)
-						.insert(item, callback(resolve, reject));
+						.insert(item, options, callback(resolve, reject));
 				} catch (error) {
 					reject(error);
 				}
