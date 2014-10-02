@@ -3,6 +3,7 @@ module.exports = function(express, data, page) {
 
 	var dataService = require('../../main/service/data');
 	var mailService = require('../../main/service/mail');
+	var utilService = require('../../main/service/util');
 
 	express.get(page.path, function(req, res) {
 		res.render(page.template, {
@@ -20,7 +21,9 @@ module.exports = function(express, data, page) {
 			return;
 		}
 
-		dataService.getUserByEmail(email).catch(handleError(res)).then(function(user) {
+		var errorHandler = utilService.createErrorHandler(res, data.pages.error_server.path);
+
+		dataService.getUserByEmail(email).then(function(user) {
 
 			if (!user) {
 				res.flash.email = email;
@@ -39,7 +42,7 @@ module.exports = function(express, data, page) {
 
 				if (!email || !code) {
 					var error = new Error('Recovery details are missing: {}.'.format(details));
-					data.fnHandleError(res, error);
+					errorHandler(error);
 					return;
 				}
 
@@ -53,21 +56,15 @@ module.exports = function(express, data, page) {
 						email: email,
 						code: code
 					}
-				}).catch(handleError(res)).then(function() {
+				}).then(function() {
 					res.flash.message('success', 'Recovery email sent to provided address.');
 					res.redirect(data.pages.auth_login.path);
-				});
+				}).catch(errorHandler);
 
 			});
 
-		});
+		}).catch(errorHandler);
 
 	});
-
-	function handleError(response) {
-		return function(error) {
-			data.fnHandleError(response, error);
-		}
-	}
 
 };

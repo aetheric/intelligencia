@@ -2,6 +2,7 @@ module.exports = function(express, data, page) {
 	var _ = require('underscore');
 
 	var dataService = require('../../main/service/data');
+	var utilService = require('../../main/service/util');
 
 	express.get(page.path, function(req, res) {
 		if (req.session.user) {
@@ -25,7 +26,7 @@ module.exports = function(express, data, page) {
 
 		//TODO: validate
 
-		var catcher = _.partial(data.fnHandleError, res);
+		var errorHandler = utilService.createErrorHandler(res, data.pages.error_server.path);
 
 		dataService.getUserByEmail(email).then(function(user) {
 
@@ -42,8 +43,8 @@ module.exports = function(express, data, page) {
 				res.flash.username = username;
 				res.flash.message('success', 'You have successfully registered. Please wait for verification.');
 				res.redirect(data.pages.auth_login.path);
-			}).catch(catcher);
-		}).catch(catcher);
+			}).catch(errorHandler);
+		}).catch(errorHandler);
 
 	});
 

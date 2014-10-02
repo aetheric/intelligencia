@@ -3,6 +3,7 @@ module.exports = function(express, data, page) {
 	var _ = require('underscore');
 
 	var dataService = require('../../main/service/data');
+	var utilService = require('../../main/service/util');
 
 	var defaultRedirect = data.pages.app_doc_list.path;
 	function getRedirect(req) {
@@ -33,6 +34,8 @@ module.exports = function(express, data, page) {
 		var username = req.body.username;
 		var password = req.body.password;
 
+		var errorHandler = utilService.createErrorHandler(res, data.pages.error_server.path);
+
 		if (!username || !password) {
 			res.flash.username = username;
 			res.flash.message('error', 'Aren\'t you forgetting something?');
@@ -53,9 +56,7 @@ module.exports = function(express, data, page) {
 			req.session.user = user;
 			res.redirect(getRedirect(req));
 
-		}).catch(function(error) {
-			data.fnHandleError(res, error);
-		});
+		}).catch(errorHandler);
 
 	});
 
