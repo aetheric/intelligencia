@@ -1,31 +1,33 @@
 module.exports = function(express, data, page) {
 
+	var dataService = require('../../../main/service/data');
+	var utilService = require('../../../main/service/util');
+
 	express.get(page.path, function(req, res) {
 		var username = req.subject.account.principal;
 
-		data.fnMongo(function(err, db) {
-			if (data.fnHandleError(res, err)) return;
+		var errorHandler = utilService.createErrorHandler(res, data.pages.error_server.path);
 
-			db.collection('users').find({ username: username }).nextObject(function(err, doc) {
-				if (data.fnHandleError(res, err)) return;
+		dataService.getUserByUsername(username).then(function(user) {
 
-				if (!doc) {
-					res.render(data.pages.error_missing.template, {
-						title: 'User Not Found'
-					});
-
-					return;
-				}
-
-				res.render(page.template, {
-					title: 'User Dashboard',
-					user: {
-						username: username,
-						email: doc.email
-					}
+			if (!user) {
+				res.render(data.pages.error_missing.template, {
+					title: 'User Not Found'
 				});
+
+				return;
+			}
+
+			res.render(page.template, {
+				title: 'User Dashboard',
+				user: {
+					username: username,
+					email: user.email
+				}
 			});
-		});
+
+		}).catch(errorHandler);
+
 	});
 
 	express.post(page.path, function(req, res) {
