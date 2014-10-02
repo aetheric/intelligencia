@@ -8,6 +8,7 @@ module.exports = function() {
 	var COLLECTION_DOCS = 'docs';
 	var COLLECTION_MAIL = 'mail';
 	var COLLECTION_RECOVERY = 'recovery';
+	var COLLECTION_INTEL = 'info';
 
 	var connection;
 
@@ -152,10 +153,14 @@ module.exports = function() {
 					code: code
 				};
 
+				var options = {
+					safe: true
+				};
+
 				try {
 					connection
 						.collection(COLLECTION_RECOVERY)
-						.insert(item, callback(resolve, reject));
+						.insert(item, options, callback(resolve, reject));
 				} catch (error) {
 					reject(error);
 				}
@@ -171,6 +176,32 @@ module.exports = function() {
 						.collection(COLLECTION_RECOVERY)
 						.find()
 						.toArray(callback(resolve, reject));
+				} catch (error) {
+					reject(error);
+				}
+			});
+		},
+
+		addIntel: function(username, content) {
+			return new Promise(function(resolve, reject) {
+				if (!username) return reject('No username has been provided!');
+				if (!content) return reject('No content has been provided!');
+				if (!connection) return reject('No connection has been established!');
+
+				var item = {
+					username: username,
+					content: content,
+					submitted: new Date()
+				};
+
+				var options = {
+					safe: true
+				};
+
+				try {
+					connection
+						.collection(COLLECTION_INTEL)
+						.insert(item, options, callback(resolve, reject));
 				} catch (error) {
 					reject(error);
 				}
