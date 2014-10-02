@@ -1,23 +1,24 @@
 module.exports = function(express, data, page) {
 
+	var dataService = require('../../../main/service/data');
+	var utilService = require('../../../main/service/util');
+
 	express.get(page.path + '/:docId', function(req, res) {
-		var docId = data.fnMongoId(req.params.docId);
+		var docId = req.params.docId;
 
-		data.fnMongo(function(err, db) {
-			if (data.fnHandleError(res, err)) return;
+		var errorHandler = utilService.createErrorHandler(res, data.pages.error_server.path);
 
-			db.collection('docs').find({ _id: docId }).nextObject(function(err, doc) {
-				if (data.fnHandleError(res, err)) return;
+		dataService.getDocumentById(docId).then(function(item) {
 
-				// TODO: Handle missing document.
+			// TODO: Handle missing document.
 
-				res.render(page.template, {
-					title: 'Document View',
-					doc: doc,
-					content: data.fnRedact(doc.content, req.subject)
-				});
+			res.render(page.template, {
+				title: 'Document View',
+				doc: item,
+				content: data.fnRedact(item.content, req.subject)
 			});
-		});
+
+		}).catch(errorHandler);
 
 	});
 

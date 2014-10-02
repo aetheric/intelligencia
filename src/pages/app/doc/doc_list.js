@@ -1,18 +1,18 @@
 module.exports = function(express, data, page) {
 
+	var dataService = require('../../../main/service/data');
+	var utilService = require('../../../main/service/util');
+
 	express.get(page.path, function(req, res) {
-		data.fnMongo(function(err, db) {
-			if (data.fnHandleError(res, err)) return;
 
-			db.collection('docs').find().toArray(function(err, items) {
-				if (data.fnHandleError(res, err)) return;
+		var errorHandler = utilService.createErrorHandler(res, data.pages.error_server.path);
 
-				res.render(page.template, {
-					title: 'Document List',
-					docs: items
-				});
+		dataService.getDocumentList().then(function(items) {
+			res.render(page.template, {
+				title: 'Document List',
+				docs: items
 			});
-		});
+		}).catch(errorHandler);
 
 	});
 };

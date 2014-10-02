@@ -66,22 +66,6 @@ module.exports = function() {
 			});
 		},
 
-		getDocumentDetail: function(docId) {
-			return new Promise(function(resolve, reject) {
-				if (!docId) return reject('Document id is not valid');
-				if (!connection) return reject('No connection has been established');
-
-				try {
-					connection
-						.collection(COLLECTION_DOCS)
-						.find(singleton('_id', mongoId(docId)))
-						.nextObject(callback(resolve, reject));
-				} catch (error) {
-					return reject(error);
-				}
-			});
-		},
-
 		getUserList: function() {
 			return new Promise(function(resolve, reject) {
 				if (!connection) return reject('No connection has been established');
@@ -187,6 +171,37 @@ module.exports = function() {
 						.collection(COLLECTION_RECOVERY)
 						.find()
 						.toArray(callback(resolve, reject));
+				} catch (error) {
+					reject(error);
+				}
+			});
+		},
+
+		getDocumentList: function() {
+			return new Promise(function(resolve, reject) {
+				if (!connection) return reject('No connection has been established!');
+
+				try {
+					connection
+						.collection(COLLECTION_DOCS)
+						.find()
+						.toArray(callback(resolve, reject));
+				} catch (error) {
+					reject(error);
+				}
+			});
+		},
+
+		getDocumentById: function(docId) {
+			return new Promise(function(resolve, reject) {
+				if (!docId) return reject('No document id has been provided.');
+				if (!connection) return reject('No connection has been established!');
+
+				try {
+					connection
+						.collection(COLLECTION_DOCS)
+						.find(singleton('_id', mongoId(docId)))
+						.nextObject(callback(resolve, reject));
 				} catch (error) {
 					reject(error);
 				}
