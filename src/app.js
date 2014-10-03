@@ -53,11 +53,13 @@ require('./main/service/mail').init({
 	debug: data.env.dev
 });
 
+// prototype extension utils
+require('./utils/utils')();
+
 require('./main/service/util').init();
 require('./main/service/redacter').init();
 
 require('./utils/pagescan')(data);
-require('./utils/utils')(data);
 
 // init and set up express.
 var express = require('./express')(data);

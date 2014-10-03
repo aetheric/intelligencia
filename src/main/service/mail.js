@@ -3,6 +3,7 @@ module.exports = function() {
 	var mail = require('nodemailer');
 	var asciidoc = require('asciidoctorjs-npm-wrapper').Asciidoctor;
 	//TODO: Get Asciidoctor rendering of email templates working.
+	var Promise = require('promise');
 
 	var transport;
 
