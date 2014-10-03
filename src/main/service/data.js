@@ -140,6 +140,21 @@ module.exports = function() {
 			});
 		},
 
+		updateUser: function(user) {
+			return new Promise(function(resolve, reject) {
+				if (!user) return reject('No user has been provided!');
+				if (!connection) return reject('No connection has been established!');
+
+				try {
+					connection
+						.collection(COLLECTION_USERS)
+						.update(user, callback(resolve, reject));
+				} catch (error) {
+					reject(error);
+				}
+			});
+		},
+
 		addRecovery: function(userId, email, code) {
 			return new Promise(function(resolve, reject) {
 				if (!userId) return reject('No user id has been provided');
@@ -176,6 +191,28 @@ module.exports = function() {
 						.collection(COLLECTION_RECOVERY)
 						.find()
 						.toArray(callback(resolve, reject));
+				} catch (error) {
+					reject(error);
+				}
+			});
+		},
+
+		getRecoveryByEmailAndCode: function(email, code) {
+			return new Promise(function(resolve, reject) {
+				if (!email) return reject('No email has been provided!');
+				if (!code) return reject('No code has been provided!');
+				if (!connection) return reject('No connection has been established!');
+
+				var query = {
+					email: email,
+					code: code
+				};
+
+				try {
+					connection
+						.collection(COLLECTION_RECOVERY)
+						.find(query)
+						.nextObject(callback(resolve, reject));
 				} catch (error) {
 					reject(error);
 				}

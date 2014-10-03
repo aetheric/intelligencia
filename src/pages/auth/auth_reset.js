@@ -2,6 +2,9 @@ module.exports = function(express, data, page) {
 	var _ = require('underscore');
 	var sha256 = require('crypto-js/sha256');
 
+	var dataService = require('../../../main/service/data');
+	var utilService = requrie('../../../main/service/util');
+
 	express.get(page.path, function(req, res) {
 		res.render(page.template, {
 			title: 'Password Reset',
@@ -30,39 +33,36 @@ module.exports = function(express, data, page) {
 			return;
 		}
 
-		data.fnMongo(function(err, db) {
-			if (data.fnHandleError(res, err)) return;
+		var errorHandler = utilService.createErrorHandler(res, data.pages.error_server.path);
 
-			db.collection('recovery').find({ code: code, email: email }).nextObject(function(err, recovery) {
-				if (data.fnHandleError(res, err)) return;
+		data.getRecoveryByEmailAndCode(email, code).then(function(recovery) {
 
-				if (!recovery) {
-					res.flash.message('error', 'The recovery code you just used has expired.');
+			if (!recovery) {
+				res.flash.message('error', 'The recovery code you just used has expired.');
+				res.redirect(page.path);
+				return;
+			}
+
+			data.getUserById(recovery.userId).then(function(user) {
+
+				if (!user) {
+					res.flash.message('error', 'The user for that recovery code has expired.');
 					res.redirect(page.path);
 					return;
 				}
 
-				var users = db.collection('users');
-				users.find({ _id: recovery.userId }).nextObject(function(err, user) {
-					if (data.fnHandleError(res, err)) return;
+				user.password = sha256(user.username + pass1);
 
-					if (!user) {
-						res.flash.message('error', 'The user for that recovery code has expired.');
-						res.redirect(page.path);
-						return;
-					}
+				data.updateUser(user).then(function() {
+					res.flash.username = user.name;
+					res.flash.message('success', 'The password has been successfully updated.');
+					res.redirect(data.pages.auth_login.path);
+				}).catch(errorHandler);
 
-					user.password = sha256(user.username + pass1);
-					users.update(user, function(err) {
-						if (data.fnHandleError(res, err)) return;
+			}).catch(errorHandler);
 
-						res.flash.username = user.name;
-						res.flash.message('success', 'The password has been successfully updated.');
-						res.redirect(data.pages.auth_login.path);
-					});
-				});
-			});
-		});
+		}).catch(errorHandler);
+
 	});
 
 };
