@@ -11,6 +11,7 @@ module.exports = function() {
 	var COLLECTION_INTEL = 'info';
 
 	var connection;
+	var settings;
 
 	function mongoId(objectId) {
 		return new mongo.ObjectID(objectId);
@@ -34,20 +35,30 @@ module.exports = function() {
 
 		init: function(config) {
 			return new Promise(function(resolve, reject) {
+
+				settings = _.defaults(config, {
+					user: 'mongo',
+					pass: 'mongo',
+					host: 'localhost',
+					port: 27017
+				});
+
 				var connection_url = format('mongodb://%s:%s@%s:%d/%s',
-					config.user || 'mongo',
-					config.pass || 'mongo',
-					config.host || 'localhost',
-					config.port,
-					config.path
+					settings.user,
+					settings.pass,
+					settings.host,
+					settings.port,
+					settings.path
 				);
 
-				client.connect(connection_url, function(error, database) {
-					return error
-						? reject(error)
-						: resolve(connection = database);
-				});
+				client.connect(connection_url, callback(resolve, reject));
+			}).then(function(conn) {
+				connection = conn;
 			});
+		},
+
+		getConfig: function() {
+			return _.extend({}, settings);
 		},
 
 		close: function() {
