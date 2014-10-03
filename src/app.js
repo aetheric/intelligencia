@@ -9,21 +9,7 @@ var data = {
 
 	env: {
 		current: process.env.NODE_ENV || 'development',
-		port: process.env.PORT || 8015,
-
-		db: {
-			user: process.env.DB_USER || 'intelligencia',
-			pass: process.env.DB_PASS,
-			host: process.env.DB_HOST || 'oceanic.mongohq.com',
-			port: process.env.DB_PORT || '10096',
-			path: process.env.DB_PATH || 'app24119285'
-		},
-
-		mail: {
-			user: process.env.MAIL_USER || 'intelligencia@aetheric.co.nz',
-			pass: process.env.MAIL_PASS
-		}
-
+		port: process.env.PORT || 8015
 	},
 
 	pages: {},
@@ -52,6 +38,23 @@ _.extend(data.env, {
 	dev: data.env.current === 'development',
 	prod: data.env.current === 'production'
 });
+
+require('./main/service/data').init({
+	user: process.env.DB_USER || 'intelligencia',
+	pass: process.env.DB_PASS || 'password',
+	host: process.env.DB_HOST || 'localhost',
+	port: process.env.DB_PORT || '27017',
+	path: process.env.DB_PATH || 'intelligencia'
+});
+
+require('./main/service/mail').init({
+	username: process.env.MAIL_USER || 'intelligencia@aetheric.co.nz',
+	password: process.env.MAIL_PASS || 'password',
+	debug: data.env.dev
+});
+
+require('./main/service/util').init();
+require('./main/service/redacter').init();
 
 require('./utils/pagescan')(data);
 require('./utils/utils')(data);

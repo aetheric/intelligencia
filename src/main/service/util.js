@@ -2,6 +2,9 @@ module.exports = function(){
 
 	return $this = {
 
+		init: function() {
+		},
+
 		/**
 		 * This function allows for single-line handling of critical error conditions. Should be used in code as follows:
 		 * <code>if (data.fnHandleError(res, err)) return;</code>. Will log an error stacktrace, and format a message for

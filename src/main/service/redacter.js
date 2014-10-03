@@ -34,6 +34,9 @@ module.exports = function() {
 
 	return {
 
+		init: function() {
+		},
+
 		redact: function (document, predicate) {
 			return new Promise(function(resolve, reject) {
 				if (!document) return reject(new Error('Document is missing'));
