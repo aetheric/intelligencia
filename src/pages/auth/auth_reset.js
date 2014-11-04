@@ -2,8 +2,8 @@ module.exports = function(express, data, page) {
 	var _ = require('underscore');
 	var sha256 = require('crypto-js/sha256');
 
-	var dataService = require('../../../main/service/data');
-	var utilService = requrie('../../../main/service/util');
+	var dataService = require('../../main/service/data');
+	var utilService = require('../../main/service/util');
 
 	express.get(page.path, function(req, res) {
 		res.render(page.template, {
@@ -35,7 +35,7 @@ module.exports = function(express, data, page) {
 
 		var errorHandler = utilService.createErrorHandler(res, data.pages.error_server.path);
 
-		data.getRecoveryByEmailAndCode(email, code).then(function(recovery) {
+		dataService.getRecoveryByEmailAndCode(email, code).then(function(recovery) {
 
 			if (!recovery) {
 				res.flash.message('error', 'The recovery code you just used has expired.');
@@ -53,7 +53,7 @@ module.exports = function(express, data, page) {
 
 				user.password = sha256(user.username + pass1);
 
-				data.updateUser(user).then(function() {
+				dataService.updateUser(user).then(function() {
 					res.flash.username = user.name;
 					res.flash.message('success', 'The password has been successfully updated.');
 					res.redirect(data.pages.auth_login.path);

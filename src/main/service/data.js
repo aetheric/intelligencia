@@ -3,6 +3,7 @@ module.exports = function() {
 	var client = mongo.MongoClient;
 	var format = require('format');
 	var Promise = require('promise');
+	var _ = require('underscore');
 
 	var COLLECTION_USERS = 'users';
 	var COLLECTION_DOCS = 'docs';
