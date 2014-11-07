@@ -3,7 +3,7 @@ module.exports = function(data) {
 	var Express = require('express');
 	var express = Express();
 
-	var i18n = require('./main/middleware/i18n');
+//	var i18n = require('./main/middleware/i18n');
 	var flash = require('./main/middleware/flash');
 
 	// configure the express server
@@ -26,7 +26,7 @@ module.exports = function(data) {
 
 		express.use(flash());
 
-		i18n(express, data);
+//		i18n(express, data);
 	});
 
 	return express;

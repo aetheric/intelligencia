@@ -32,7 +32,7 @@ module.exports = function() {
 		 */
 		init: function(config) {
 			return new Promise(function(resolve, reject) {
-				if (!config) return reject('Config not provided');
+				if (!config) return reject(new Error('Config not provided'));
 
 				try {
 					transport = mail.createTransport('gmail', {
@@ -58,7 +58,7 @@ module.exports = function() {
 		send: function(options) {
 			return new Promise(function(resolve, reject) {
 				data.getMailTemplateByName(options.template).then(function(template) {
-					if (!template) return reject('Mail template not found');
+					if (!template) return reject(new Error('Mail template not found'));
 
 					try {
 						transport.sendMail(_.defaults(options, {

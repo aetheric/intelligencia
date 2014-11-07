@@ -17,11 +17,20 @@ module.exports = function(){
 			return function(error) {
 				if (!error) return false;
 
-				// log the error to the console.
-				console.error(error.stack);
+				var message;
+				if (typeof(error) === "string") {
+					message = error;
+				} else if (error.stack) {
+					message = error.stack;
+				} else {
+					message = JSON.toJSON(error);
+				}
+
+				// Log the error, whatever it is.
+				console.error(message);
 
 				// Create a formatted error message.
-				var message = error.code ? ' ({})'.format(error.code) : '';
+				message = error.code ? ' ({})'.format(error.code) : '';
 				message = '{}{}: {}'.format(error.name, message, error.message);
 
 				// Redirect to server error page with message.
