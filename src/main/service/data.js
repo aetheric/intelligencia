@@ -11,8 +11,14 @@ module.exports = function() {
 	var COLLECTION_RECOVERY = 'recovery';
 	var COLLECTION_INTEL = 'info';
 
-	var connection;
 	var settings;
+	var connection = {
+		value: null,
+		promise: null,
+		resolve: null,
+		reject: null
+	};
+
 
 	function mongoId(objectId) {
 		return new mongo.ObjectID(objectId);
@@ -52,9 +58,24 @@ module.exports = function() {
 					settings.path
 				);
 
-				client.connect(connection_url, callback(resolve, reject));
-			}).then(function(conn) {
-				connection = conn;
+				client.connect(connection_url, function(error, conn) {
+					if (error) {
+						if (connection.promise) {
+							connection.reject(error);
+						}
+
+						reject(error);
+						return;
+					}
+
+					connection = conn;
+					if (connection.promise) {
+						connection.resolve(connection);
+					}
+
+					resolve(connection);
+				});
+
 			});
 		},
 
@@ -62,35 +83,55 @@ module.exports = function() {
 			return _.extend({}, settings);
 		},
 
+		getConnection: function() {
+			if (!connection.promise) {
+				if (connection) {
+					connection.promise = Promise.resolve(connection);
+				} else {
+					connection.promise = new Promise(function(resolve, reject) {
+						connection.resolve = resolve;
+						connection.reject = reject;
+					});
+				}
+			}
+
+			return connection.promise;
+		},
+
 		close: function() {
 			return new Promise(function(resolve, reject) {
-				if (connection) {
-					try {
-						connection.close();
-					} catch (error) {
-						return reject(error);
-					}
 
-					connection = null;
-					return resolve();
+				if (!connection) {
+					reject(new Error('Connection either already closed, or uninitialised.'));
+					return;
 				}
 
-				return reject(new Error('Connection either already closed, or uninitialised.'));
+				try {
+					connection.close();
+				} catch (error) {
+					return reject(error);
+				}
+
+				connection = null;
+				resolve();
+
 			});
 		},
 
 		getUserList: function() {
 			return new Promise(function(resolve, reject) {
-				if (!connection) return reject(new Error('No connection has been established'));
 
-				try {
-					connection
-						.collection(COLLECTION_USERS)
-						.find()
-						.toArray(callback(resolve, reject));
-				} catch (error) {
-					return reject(error);
-				}
+				service.getConnection().then(function(connection) {
+					try {
+						connection
+							.collection(COLLECTION_USERS)
+							.find()
+							.toArray(callback(resolve, reject));
+					} catch (error) {
+						return reject(error);
+					}
+				}, reject);
+
 			});
 		},
 
@@ -112,16 +153,18 @@ module.exports = function() {
 		getUser: function(criteria) {
 			return new Promise(function(resolve, reject) {
 				if (!criteria) return reject(new Error('No search criteria provided!'));
-				if (!connection) return reject(new Error('No connection has been established!'));
 
-				try {
-					connection
-						.collection(COLLECTION_USERS)
-						.find(criteria)
-						.nextObject(callback(resolve, reject));
-				} catch (error) {
-					reject(error);
-				}
+				service.getConnection().then(function(connection) {
+					try {
+						connection
+							.collection(COLLECTION_USERS)
+							.find(criteria)
+							.nextObject(callback(resolve, reject));
+					} catch (error) {
+						reject(error);
+					}
+				}, reject);
+
 			});
 		},
 
@@ -130,7 +173,6 @@ module.exports = function() {
 				if (!username) return reject(new Error('No username has been provided'));
 				if (!password) return reject(new Error('No password has been provided'));
 				if (!email) return reject(new Error('No email address has been provided'));
-				if (!connection) return reject(new Error('No connection has been established!'));
 
 				var item = {
 					username: username,
@@ -142,28 +184,33 @@ module.exports = function() {
 					safe: true
 				};
 
-				try {
-					connection
-						.collection(COLLECTION_USERS)
-						.insert(item, options, callback(resolve, reject));
-				} catch (error) {
-					reject(error);
-				}
+				service.getConnection().then(function(connection) {
+					try {
+						connection
+							.collection(COLLECTION_USERS)
+							.insert(item, options, callback(resolve, reject));
+					} catch (error) {
+						reject(error);
+					}
+				}, reject);
+
 			});
 		},
 
 		updateUser: function(user) {
 			return new Promise(function(resolve, reject) {
 				if (!user) return reject(new Error('No user has been provided!'));
-				if (!connection) return reject(new Error('No connection has been established!'));
 
-				try {
-					connection
-						.collection(COLLECTION_USERS)
-						.update(user, callback(resolve, reject));
-				} catch (error) {
-					reject(error);
-				}
+				service.getConnection().then(function(connection) {
+					try {
+						connection
+							.collection(COLLECTION_USERS)
+							.update(user, callback(resolve, reject));
+					} catch (error) {
+						reject(error);
+					}
+				}, reject);
+
 			});
 		},
 
@@ -172,7 +219,6 @@ module.exports = function() {
 				if (!userId) return reject(new Error('No user id has been provided'));
 				if (!email) return reject(new Error('No email address has been provided'));
 				if (!code) return reject(new Error('No recovery code has been provided.'));
-				if (!connection) return reject(new Error('No connection has been established!'));
 
 				var item = {
 					userId: userId,
@@ -184,28 +230,33 @@ module.exports = function() {
 					safe: true
 				};
 
-				try {
-					connection
-						.collection(COLLECTION_RECOVERY)
-						.insert(item, options, callback(resolve, reject));
-				} catch (error) {
-					reject(error);
-				}
+				service.getConnection().then(function(connection) {
+					try {
+						connection
+							.collection(COLLECTION_RECOVERY)
+							.insert(item, options, callback(resolve, reject));
+					} catch (error) {
+						reject(error);
+					}
+				}, reject);
+
 			});
 		},
 
 		getRecoveryList: function() {
 			return new Promise(function(resolve, reject) {
-				if (!connection) return reject(new Error('No connection has been established!'));
 
-				try {
-					connection
-						.collection(COLLECTION_RECOVERY)
-						.find()
-						.toArray(callback(resolve, reject));
-				} catch (error) {
-					reject(error);
-				}
+				service.getConnection().then(function(connection) {
+					try {
+						connection
+							.collection(COLLECTION_RECOVERY)
+							.find()
+							.toArray(callback(resolve, reject));
+					} catch (error) {
+						reject(error);
+					}
+				});
+
 			});
 		},
 
@@ -213,21 +264,23 @@ module.exports = function() {
 			return new Promise(function(resolve, reject) {
 				if (!email) return reject(new Error('No email has been provided!'));
 				if (!code) return reject(new Error('No code has been provided!'));
-				if (!connection) return reject(new Error('No connection has been established!'));
 
 				var query = {
 					email: email,
 					code: code
 				};
 
-				try {
-					connection
-						.collection(COLLECTION_RECOVERY)
-						.find(query)
-						.nextObject(callback(resolve, reject));
-				} catch (error) {
-					reject(error);
-				}
+				service.getConnection().then(function(connection) {
+					try {
+						connection
+							.collection(COLLECTION_RECOVERY)
+							.find(query)
+							.nextObject(callback(resolve, reject));
+					} catch (error) {
+						reject(error);
+					}
+				});
+
 			});
 		},
 
@@ -235,7 +288,6 @@ module.exports = function() {
 			return new Promise(function(resolve, reject) {
 				if (!username) return reject(new Error('No username has been provided!'));
 				if (!content) return reject(new Error('No content has been provided!'));
-				if (!connection) return reject(new Error('No connection has been established!'));
 
 				var item = {
 					username: username,
@@ -247,60 +299,69 @@ module.exports = function() {
 					safe: true
 				};
 
-				try {
-					connection
-						.collection(COLLECTION_INTEL)
-						.insert(item, options, callback(resolve, reject));
-				} catch (error) {
-					reject(error);
-				}
+				service.getConnection().then(function(connection) {
+					try {
+						connection
+							.collection(COLLECTION_INTEL)
+							.insert(item, options, callback(resolve, reject));
+					} catch (error) {
+						reject(error);
+					}
+				});
+
 			});
 		},
 
 		getDocumentList: function() {
 			return new Promise(function(resolve, reject) {
-				if (!connection) return reject(new Error('No connection has been established!'));
 
-				try {
-					connection
-						.collection(COLLECTION_DOCS)
-						.find()
-						.toArray(callback(resolve, reject));
-				} catch (error) {
-					reject(error);
-				}
+				service.getConnection().then(function(connection) {
+					try {
+						connection
+							.collection(COLLECTION_DOCS)
+							.find()
+							.toArray(callback(resolve, reject));
+					} catch (error) {
+						reject(error);
+					}
+				});
+
 			});
 		},
 
 		getDocumentById: function(docId) {
 			return new Promise(function(resolve, reject) {
 				if (!docId) return reject(new Error('No document id has been provided.'));
-				if (!connection) return reject(new Error('No connection has been established!'));
 
-				try {
-					connection
-						.collection(COLLECTION_DOCS)
-						.find(singleton('_id', mongoId(docId)))
-						.nextObject(callback(resolve, reject));
-				} catch (error) {
-					reject(error);
-				}
+				service.getConnection().then(function(connection) {
+					try {
+						connection
+							.collection(COLLECTION_DOCS)
+							.find(singleton('_id', mongoId(docId)))
+							.nextObject(callback(resolve, reject));
+					} catch (error) {
+						reject(error);
+					}
+				});
+
 			});
 		},
 
 		getMailTemplateByName: function(templateName) {
 			return new Promise(function(resolve, reject) {
 				if (!templateName) return reject(new Error('Template name is not valid'));
-				if (!connection) return reject(new Error('No connection has been established'));
 
-				try {
-					connection
-						.collection(COLLECTION_MAIL)
-						.find(singleton('name', templateName))
-						.nextObject(callback(resolve, reject));
-				} catch (error) {
-					reject(error);
-				}
+				service.getConnection().then(function(connection) {
+					try {
+						connection
+							.collection(COLLECTION_MAIL)
+							.find(singleton('name', templateName))
+							.nextObject(callback(resolve, reject));
+					} catch (error) {
+						reject(error);
+					}
+				});
+
 			});
 		}
 
