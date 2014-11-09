@@ -41,7 +41,8 @@ module.exports = function() {
 	var service = {
 
 		init: function(config) {
-			return new Promise(function(resolve, reject) {
+
+			var promise = new Promise(function(resolve, reject) {
 
 				settings = _.defaults(config, {
 					user: 'mongo',
@@ -59,24 +60,37 @@ module.exports = function() {
 				);
 
 				client.connect(connection_url, function(error, conn) {
-					if (error) {
-						if (connection.promise) {
-							connection.reject(error);
-						}
 
+					if (error) {
 						reject(error);
 						return;
 					}
 
-					connection = conn;
-					if (connection.promise) {
-						connection.resolve(connection);
+					if (!conn) {
+						reject(new Error('Connection failed to establish!'));
+						return;
 					}
 
-					resolve(connection);
+					connection.value = conn;
+					resolve(connection.value);
+
 				});
 
 			});
+
+			promise.then(function(conn) {
+				if (connection.promise) {
+					connection.resolve(conn);
+				}
+			});
+
+			promise.catch(function(error) {
+				if (connection.promise) {
+					connection.reject(error);
+				}
+			});
+
+			return promise;
 		},
 
 		getConfig: function() {
@@ -85,8 +99,8 @@ module.exports = function() {
 
 		getConnection: function() {
 			if (!connection.promise) {
-				if (connection) {
-					connection.promise = Promise.resolve(connection);
+				if (connection.value) {
+					connection.promise = Promise.resolve(connection.value);
 				} else {
 					connection.promise = new Promise(function(resolve, reject) {
 						connection.resolve = resolve;
