@@ -79,12 +79,16 @@ module.exports = function() {
 			});
 
 			promise.then(function(conn) {
+				log.info('Mongo database start-up succeeded!');
+
 				if (connection.promise) {
 					connection.resolve(conn);
 				}
 			});
 
 			promise.catch(function(error) {
+				log.info('Mongo database start-up failed!');
+
 				if (connection.promise) {
 					connection.reject(error);
 				}
